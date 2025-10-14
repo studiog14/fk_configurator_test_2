@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konfigurator krzeseł - Fajne Krzesła (Mobile)</title>
+  <link rel="icon" href="icons/favicon.png" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f0f0; }
+    .container { max-width: 100%; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 20px; background: white; margin-bottom: 20px; border-radius: 10px; }
+    .title { color: #333; font-size: 24px; margin: 0; }
+    .link { color: #007AFF; text-decoration: none; font-size: 18px; display: inline-block; margin-top: 20px; padding: 12px 24px; border: 2px solid #007AFF; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">Konfigurator Krzeseł</h1>
+      <p>Dostępne również w wersji desktopowej dla komputerów osobistych</p>
+      <a href="index.html" class="link">Otwórz wersję desktopową</a>
+    </div>
+
+    <div style="text-align: center; background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
+      <h2>Wiedziałeś że?</h2>
+      <p>Ta aplikacja oferuje najlepszą jakość współpracy 3D na komputerach stacjonarnych i laptopach.</p>
+      <p>Unikalne funkcje konfiguratora są projektowane z myślą o dużej dokładności, wygodzie i przejrzystości.</p>
+    </div>
+
+    <div style="text-align: center; background: white; padding: 20px; border-radius: 10px;">
+      <p style="color: #666; margin-bottom: 10px;">Aktualnie przeglądasz:</p>
+      <strong>Mobile Navigation Mode</strong>
+      <p style="color: #666; font-size: 14px; margin-top: 10px;">
+        Dla najlepszego doświadczenia użyj komputera stacjonarnego lub laptopa.
+        Wersja mobilna wymaga dodatkowej optymalizacji.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    console.log('📱 SIMPLE MOBILE MODE: Mobile navigation activated');
+
+    // Enhanced mobile detection specifically for iOS devices like iPhone XR
+    const isMobileDevice = () => {
+      const ua = navigator.userAgent || '';
+
+      // iOS specific checks
+      const isiOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+
+      // Touch capability checks
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+      // Screen size checks
+      const isNarrow = window.innerWidth <= 820;
+      const isTiny = window.innerWidth <= 480;
+
+      console.log('📱 iOS Detection Debug:', {
+        userAgent: ua,
+        isiOS,
+        isAndroid,
+        hasTouch,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        maxTouchPoints: navigator.maxTouchPoints,
+        platform: navigator.platform
+      });
+
+      return isiOS || isAndroid || hasTouch || isNarrow;
+    };
+
+    console.log('📱 Device detection result:', isMobileDevice());
+    console.log('📱 Device info:', {
+      userAgent: navigator.userAgent.substring(0, 50),
+      width: window.innerWidth,
+      height: window.innerHeight,
+      touchPoints: navigator.maxTouchPoints || 'N/A',
+      platform: navigator.platform || 'N/A'
+    });
+    console.log('📱 Window dimensions:', window.innerWidth + 'x' + window.innerHeight);
+    console.log('📱 User Agent:', navigator.userAgent.substring(0, 100));
+
+    // Add info about the current mode
+    setTimeout(() => {
+      const infoDiv = document.createElement('div');
+      infoDiv.innerHTML = `
+        <div style="position: fixed; bottom: 10px; left: 10px; right: 10px; background: #333; color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000;">
+          <strong>Mobile Mode Info:</strong>
+          <br>• Device: ${isMobileDevice() ? 'Mobile' : 'Desktop'}
+          <br>• Resolution: ${window.innerWidth}x${window.innerHeight}
+          <br>• Browser: ${navigator.userAgent.split(' ').pop().substring(0, 50)}
+        </div>
+      `;
+      document.body.appendChild(infoDiv);
+    }, 1000);
+  </script>
+</body>
+</html>
