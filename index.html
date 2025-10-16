@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- PATCH: Mobile UI fix enabled (2025-09-14) -->
 <html lang="pl">
 
 <head>
@@ -110,7 +109,7 @@
     }
 
     /* 📱 Mobile: chairs section to bottom with small spacing */
-    @media (max-width: 820px) {
+    @media (max-width: 900px) {
       #sidebar #config-section {
         padding-bottom: 250px;
         max-height: calc(100vh - 40px);
@@ -221,6 +220,167 @@
         display: inline-flex !important;
         visibility: visible !important;
         opacity: 1 !important;
+      }
+    }
+
+    /* 📱 Extra small screens (iPhone XR, iPhone 11, etc.) */
+    @media (max-width: 500px) {
+      #sidebar {
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 280px !important;
+        padding: 16px 12px 200px 12px !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 1200 !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        background: #fff !important;
+      }
+
+      #canvas-container {
+        width: calc(100% - 280px) !important;
+        display: block !important;
+        visibility: visible !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 280px !important;
+        height: 100vh !important;
+      }
+
+      #canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        visibility: visible !important;
+      }
+
+      .thumbnail {
+        width: 85px !important;
+        height: 85px !important;
+        min-height: 85px !important;
+      }
+
+      .thumbnail-caption {
+        font-size: 11px !important;
+        margin-top: 4px !important;
+      }
+
+      .category-button {
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        min-width: 65px !important;
+      }
+
+      #config-section {
+        padding-bottom: 40px !important;
+        max-height: calc(100vh - 120px) !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      #model-section .options-grid {
+        max-height: calc(100vh - 300px) !important;
+        gap: 6px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+      }
+
+      .options-grid {
+        gap: 6px !important;
+        padding-bottom: 20px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+      }
+
+      /* Force mobile UI elements to be visible */
+      #category-buttons {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      #special-categories-container {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      #category-buttons-container {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      .category-button {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      /* Force app visibility */
+      #app {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      /* Force welcome screen to be hidden on small screens */
+      #welcome-screen {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+    }
+
+    /* 📱 Very small screens (iPhone SE, etc.) */
+    @media (max-width: 380px) {
+      #sidebar {
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+        padding: 12px 8px 150px 8px !important;
+      }
+
+      #canvas-container {
+        width: calc(100% - 260px) !important;
+      }
+
+      .thumbnail {
+        width: 75px !important;
+        height: 75px !important;
+        min-height: 75px !important;
+      }
+
+      .thumbnail-caption {
+        font-size: 10px !important;
+        margin-top: 3px !important;
+      }
+
+      .category-button {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+        min-width: 60px !important;
+      }
+
+      #config-section {
+        padding-bottom: 30px !important;
+        max-height: calc(100vh - 100px) !important;
+      }
+
+      #model-section .options-grid {
+        max-height: calc(100vh - 250px) !important;
+        gap: 4px !important;
+      }
+
+      .options-grid {
+        gap: 4px !important;
+        padding-bottom: 15px !important;
       }
     }
     /* SEARCH FUNCTIONALITY COMPLETELY REMOVED */
@@ -2775,27 +2935,116 @@ body.mobile-mode #standalone-mobile-ui {
 
 <body>
     <script>
-      console.log('📱 SCRIPT START: Mobile bootstrap starting...');
-      
-      // 🚀 EARLY MOBILE-ONLY BOOTSTRAP (runs before main init)
+      console.log('📱 MOBILE FIX: Starting aggressive mobile detection...');
+
+      // 🎯 AGGRESSIVE MOBILE DETECTION - Multiple fallback methods
       (function(){
-        console.log('📱 BOOTSTRAP FUNCTION: Starting mobile check');
-        
-        try {
-          const urlFlag = /[?#&]mobile=1\b/.test(location.search + location.hash);
-          const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-          const coarse = (window.matchMedia && matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0;
-          const narrow = window.innerWidth <= 820;
-          
-          console.log('📱 CHECKS:', { urlFlag, uaMobile, coarse, narrow });
-          
-          const isMobileEarly = urlFlag || uaMobile || coarse || narrow;
-          
-          // Global mobile check function
-          window.isMobileNow = function() {
-            return urlFlag || uaMobile || coarse || narrow || document.body.classList.contains('mobile-mode');
-          };
+        // Method 1: Screen width detection (improved for iPhone XR)
+        const isMobileWidth = window.innerWidth <= 900;
+
+        // Method 2: User agent detection (improved for iOS devices)
+        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        // Method 3: Touch capability detection
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        // Method 4: Platform detection (iPad on iOS 13+)
+        const isMobilePlatform = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+        // Method 5: Screen size detection (improved for iPhone XR)
+        const isSmallScreen = window.screen.width <= 900 || window.screen.height <= 900;
+
+        // Method 6: Device pixel ratio detection (iPhone XR has high DPI)
+        const hasHighDPI = window.devicePixelRatio > 1.5;
+
+        // Method 7: Specific iPhone XR detection
+        const isIphoneXR = /iPhone.*OS 12_/.test(navigator.userAgent) ||
+                          (navigator.userAgent.includes('iPhone') && window.screen.width === 414 && window.screen.height === 896);
+
+        // Method 8: Viewport detection for small screens
+        const isSmallViewport = window.innerWidth <= 500 || window.innerHeight <= 900;
+
+        // Method 9: iPhone XR specific detection (414x896 resolution)
+        const isIphoneXRSpecific = window.screen.width === 414 && window.screen.height === 896 && window.devicePixelRatio >= 2;
+
+        // Method 10: iPhone XR detection by exact user agent pattern
+        const isIphoneXRUA = /iPhone.*OS 12_/.test(navigator.userAgent) && window.screen.width === 414;
+
+        // Method 11: iPhone XR detection by screen dimensions and pixel ratio
+        const isIphoneXRDimensions = window.screen.width === 414 && window.screen.height === 896 && window.devicePixelRatio === 2;
+
+        // Method 12: Generic small iOS device detection
+        const isSmallIOS = /iPhone/.test(navigator.userAgent) && window.screen.width <= 430 && window.screen.height <= 900;
+
+        // Method 13: iPhone XR specific by exact dimensions and user agent
+        const isIphoneXRExact = navigator.userAgent.includes('iPhone') &&
+                               window.screen.width === 414 &&
+                               window.screen.height === 896 &&
+                               window.devicePixelRatio === 2;
+
+        // Method 14: iPhone 11/12/13 mini detection
+        const isIphoneMini = navigator.userAgent.includes('iPhone') &&
+                            window.screen.width === 375 &&
+                            window.screen.height === 812 &&
+                            window.devicePixelRatio === 3;
+
+        // Method 15: iPhone XR detection by exact user agent pattern
+        const isIphoneXRExactUA = /iPhone.*OS 12_.*414x896/i.test(navigator.userAgent) ||
+                                 (navigator.userAgent.includes('iPhone') &&
+                                  navigator.userAgent.includes('OS 12') &&
+                                  (window.screen.width === 414 || window.screen.height === 896));
+
+        // Method 16: Force mobile for iPhone XR dimensions regardless of UA
+        const isIphoneXRDimensionsOnly = window.screen.width === 414 &&
+                                        window.screen.height === 896 &&
+                                        window.devicePixelRatio >= 2;
+
+        // Method 17: Force mobile for any iPhone with small screen
+        const isAnySmalliPhone = /iPhone/.test(navigator.userAgent) &&
+                                (window.screen.width <= 430 || window.screen.height <= 900);
+
+        // Method 18: Force mobile for any device with 414x896 resolution (iPhone XR/11)
+        const is414x896Device = window.screen.width === 414 && window.screen.height === 896;
+
+        // Combine all detection methods with improved logic for iPhone XR
+        const isMobileDevice = isMobileWidth || isMobileUA || hasTouch || isMobilePlatform || isSmallScreen || isIphoneXR || isSmallViewport || isIphoneXRSpecific || isIphoneXRUA || isIphoneXRDimensions || isSmallIOS || isIphoneXRExact || isIphoneMini || isIphoneXRExactUA || isIphoneXRDimensionsOnly || isAnySmalliPhone || is414x896Device;
+
+        // FORCE MOBILE MODE for iPhone XR and similar devices
+        if (isIphoneXRExact || isIphoneXRExactUA || isIphoneXRDimensionsOnly || isAnySmalliPhone || is414x896Device || window.innerWidth <= 500) {
+          document.body.classList.add('mobile-mode');
+          console.log('📱 iPhone XR/SMALL DEVICE DETECTED - FORCED MOBILE MODE');
+        }
+
+        console.log('📱 Mobile detection details:', {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          devicePixelRatio: window.devicePixelRatio,
+          userAgent: navigator.userAgent.substring(0, 50),
+          hasTouch,
+          isMobileUA,
+          isMobilePlatform,
+          isSmallScreen,
+          hasHighDPI,
+          isIphoneXR,
+          isSmallViewport,
+          finalResult: isMobileDevice
+        });
+
+        // FORCE MOBILE MODE for testing on smaller devices (improved for iPhone XR)
+        if (isMobileDevice || window.innerWidth <= 500 || isIphoneXR) {
+          document.body.classList.add('mobile-mode');
+          console.log('📱 MOBILE MODE ACTIVATED');
+        }
+
+        // Global mobile check function
+        window.isMobileNow = function() {
+          return document.body.classList.contains('mobile-mode') ||
+                 window.innerWidth <= 900 ||
+                 hasTouch ||
+                 isMobileUA;
+        };
           
           // ENABLED: Mobile panel creation for physical devices
           window.forceMobilePanel = function() {
@@ -5186,37 +5435,46 @@ body.mobile-mode #standalone-mobile-ui {
         // Dostosuj proporcje mobilne AFTER applyMobileMode
         setTimeout(adjustMobileProportions, 50);
         
-      // 📱 FORCE DESKTOP UI ON MOBILE - Disable mobile-specific UI logic
+      // 📱 MOBILE UI OPTIMIZATION - Ensure proper mobile layout
       if (document.body.classList.contains('mobile-mode') || window.innerWidth <= 820) {
-        console.log('📱 Mobile mode detected - forcing desktop UI');
+        console.log('📱 Mobile mode detected - optimizing mobile UI');
 
         // Force mobile mode class to ensure CSS rules apply
         document.body.classList.add('mobile-mode');
 
-        // HIDE mobile-specific elements
-        const mobilePanel = document.getElementById('mobile-right-panel');
-        if (mobilePanel) {
-          mobilePanel.style.display = 'none !important';
-          console.log('📱 Mobile panel hidden');
-        }
-
-        // ENSURE desktop UI is visible
+        // HIDE desktop sidebar on mobile
         const sidebar = document.getElementById('sidebar');
         if (sidebar) {
-          sidebar.style.display = 'block !important';
-          sidebar.style.visibility = 'visible !important';
-          sidebar.style.opacity = '1 !important';
-          console.log('📱 Desktop sidebar shown on mobile');
+          sidebar.style.display = 'none !important';
+          sidebar.style.visibility = 'hidden !important';
+          sidebar.style.opacity = '0 !important';
+          console.log('📱 Desktop sidebar hidden on mobile');
         }
 
-        // Adjust canvas for mobile with desktop sidebar
+        // ENSURE mobile panel is visible
+        let mobilePanel = document.getElementById('mobile-right-panel');
+        if (!mobilePanel) {
+          console.log('📱 Creating mobile panel...');
+          mobilePanel = document.createElement('aside');
+          mobilePanel.id = 'mobile-right-panel';
+          mobilePanel.style.cssText = 'position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: #fff; border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -6px 0 24px rgba(0,0,0,0.06); z-index: 150; overflow-y: auto; padding: 12px; display: block;';
+          (document.getElementById('app') || document.body).appendChild(mobilePanel);
+        } else {
+          mobilePanel.style.display = 'block';
+          mobilePanel.style.visibility = 'visible';
+          mobilePanel.style.opacity = '1';
+        }
+
+        // Adjust canvas for mobile with mobile panel
         const canvasContainer = document.getElementById('canvas-container');
         if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 460px) !important';
+          canvasContainer.style.width = 'calc(100% - 280px) !important';
           canvasContainer.style.height = '100vh !important';
           canvasContainer.style.display = 'block !important';
           canvasContainer.style.position = 'relative !important';
-          console.log('📱 Canvas container sized for desktop UI on mobile');
+          canvasContainer.style.left = '0 !important';
+          canvasContainer.style.top = '0 !important';
+          console.log('📱 Canvas container sized for mobile with mobile panel');
         }
 
         // Ensure canvas is properly sized
@@ -5338,16 +5596,16 @@ body.mobile-mode #standalone-mobile-ui {
       // Ensure the canvas element exists. Some environments or build steps
       // may accidentally remove it; create a fallback canvas so initialization
       // continues and resizeCanvas has something to work with.
-      let canvas = document.getElementById("canvas");
-      if (!canvas) {
+      let canvasElement = document.getElementById("canvas");
+      if (!canvasElement) {
         console.warn('⚠️ Canvas element not found in DOM - creating fallback <canvas id="canvas">');
         const container = document.getElementById('canvas-container') || document.getElementById('app') || document.body;
-        canvas = document.createElement('canvas');
-        canvas.id = 'canvas';
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
+        canvasElement = document.createElement('canvas');
+        canvasElement.id = 'canvas';
+        canvasElement.style.width = '100%';
+        canvasElement.style.height = '100%';
         // Insert at top of container so welcome-screen overlays remain above
-        if (container.firstChild) container.insertBefore(canvas, container.firstChild); else container.appendChild(canvas);
+        if (container.firstChild) container.insertBefore(canvasElement, container.firstChild); else container.appendChild(canvasElement);
       }
 
       viewer = new ThreeViewer({
@@ -5379,20 +5637,23 @@ body.mobile-mode #standalone-mobile-ui {
           visibility: getComputedStyle(canvas).visibility,
           zIndex: getComputedStyle(canvas).zIndex
         });
-        
+
         // Force canvas to be visible and properly sized
         canvas.style.display = 'block';
         canvas.style.visibility = 'visible';
         canvas.style.position = 'relative';
         canvas.style.zIndex = '1';
-        
-        // Ensure canvas container is properly sized
+
+        // Ensure canvas container is properly sized for mobile
         const canvasContainer = document.getElementById('canvas-container');
         if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 280px)';
+          canvasContainer.style.width = '100vw';
           canvasContainer.style.height = '100vh';
           canvasContainer.style.display = 'block';
           canvasContainer.style.visibility = 'visible';
+          canvasContainer.style.position = 'relative';
+          canvasContainer.style.left = '0';
+          canvasContainer.style.top = '0';
           console.log('📱 MOBILE DEBUG: Canvas container sized for mobile');
         }
       }
@@ -5540,19 +5801,39 @@ body.mobile-mode #standalone-mobile-ui {
       
       // Mark body as mobile-mode when on phone/tablet (UA/touch), so CSS applies even if width wider (Safari UI)
       function computeMobileMode(){
-        // DISABLED: Mobile mode detection - always return false to force desktop UI
         const forceMobileFlag = /[?#&]mobile=1\b/.test(location.search + location.hash);
+        const forceDesktopFlag = /[?#&]desktop=1\b/.test(location.search + location.hash);
 
-        // Only force mobile if explicitly requested via URL flag
-        const isMobile = forceMobileFlag;
+        // Force desktop if explicitly requested
+        if (forceDesktopFlag) {
+          console.log('🖥️ Desktop mode forced by URL flag');
+          return false;
+        }
 
-        console.log('📱 Mobile detection (DISABLED - forcing desktop UI):', {
-          forceMobileFlag,
+        // Force mobile if explicitly requested
+        if (forceMobileFlag) {
+          console.log('📱 Mobile mode forced by URL flag');
+          return true;
+        }
+
+        // Auto-detect mobile based on screen size and touch capability
+        const isMobileWidth = window.innerWidth <= 820;
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isTabletUA = /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
+
+        // Consider mobile if: small screen OR touch device OR mobile user agent
+        const isMobile = isMobileWidth || hasTouch || isMobileUA;
+
+        console.log('📱 Mobile detection:', {
+          isMobileWidth,
+          hasTouch,
+          isMobileUA,
+          isTabletUA,
           final: isMobile,
           width: window.innerWidth,
           height: window.innerHeight,
-          userAgent: navigator.userAgent.substring(0, 50),
-          device: `${window.innerWidth}x${window.innerHeight}`
+          userAgent: navigator.userAgent.substring(0, 50)
         });
 
         return isMobile;
@@ -5671,12 +5952,15 @@ body.mobile-mode #standalone-mobile-ui {
     if (window.innerWidth <= 768) {
       console.log('📱 FORCE: Small screen detected, forcing mobile mode');
       document.body.classList.add('mobile-mode');
-      const forceCtx = ensureMobilePanel();
-      if (forceCtx && forceCtx.panel) {
+      const ctx = ensureMobilePanel();
+      if (ctx && ctx.panel) {
         console.log('📱 FORCE: Mobile panel created for small screen');
       }
     }
   }, 100);
+
+  // Declare common variables at top level to avoid redeclaration errors
+  let canvasContainer, canvas, mobilePanel;
   // Ensure the mobile panel is visible and prepared as early as possible on real mobile
   try { 
     if (document.body.classList.contains('mobile-mode')) { 
@@ -5766,35 +6050,117 @@ body.mobile-mode #standalone-mobile-ui {
         const appElement = document.getElementById('app');
         if (appElement) {
           appElement.style.visibility = 'visible';
+          appElement.style.display = 'block';
           console.log('📱 App made visible');
         }
 
-        // 🔧 FORCE DESKTOP UI: Ensure desktop sidebar is visible and mobile panel is hidden
+        // 🔧 MOBILE UI FIX: Ensure mobile panel is visible and desktop sidebar is hidden
         const sidebar = document.getElementById('sidebar');
         if (sidebar) {
-          sidebar.style.display = 'block !important';
-          sidebar.style.visibility = 'visible !important';
-          sidebar.style.opacity = '1 !important';
-          console.log('📱 Desktop sidebar forced visible on mobile');
+          sidebar.style.display = 'none !important';
+          sidebar.style.visibility = 'hidden !important';
+          sidebar.style.opacity = '0 !important';
+          console.log('📱 Desktop sidebar hidden on mobile');
         }
 
-        // Hide mobile panel completely
-        const mobilePanel = document.getElementById('mobile-right-panel');
-        if (mobilePanel) {
-          mobilePanel.style.display = 'none !important';
-          mobilePanel.style.visibility = 'hidden !important';
-          mobilePanel.style.opacity = '0 !important';
-          console.log('📱 Mobile panel hidden on mobile');
+        // Show mobile panel
+        let mobilePanel = document.getElementById('mobile-right-panel');
+        if (!mobilePanel) {
+          console.log('📱 Creating mobile panel...');
+          mobilePanel = document.createElement('aside');
+          mobilePanel.id = 'mobile-right-panel';
+          mobilePanel.style.cssText = 'position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: #fff; border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -6px 0 24px rgba(0,0,0,0.06); z-index: 150; overflow-y: auto; padding: 12px; display: block; visibility: visible; opacity: 1; background-color: white !important;';
+          mobilePanel.innerHTML = `
+            <div style="padding: 15px; background: white; height: 100vh; overflow-y: auto;">
+              <div style="margin-bottom: 20px; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #333;">📱 Konfigurator Krzeseł</h3>
+                <div id="mobile-category-buttons" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px;">
+                  <button onclick="showMobileCategory('wszystkie')" style="padding: 8px 16px; background: #F5C842; border: none; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333; font-weight: 600;">Wszystkie</button>
+                  <button onclick="showMobileCategory('krzesła')" style="padding: 8px 16px; background: white; border: 2px solid #ddd; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333;">Krzesła</button>
+                  <button onclick="showMobileCategory('hokery')" style="padding: 8px 16px; background: white; border: 2px solid #ddd; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333;">Hokery</button>
+                </div>
+                <div id="mobile-models-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; text-align: center;">
+                  <div style="padding: 20px; color: #666; font-style: italic;">Ładowanie modeli...</div>
+                </div>
+              </div>
+            </div>
+          `;
+          (document.getElementById('app') || document.body).appendChild(mobilePanel);
+          console.log('✅ Mobile panel created with content');
+
+          // Add mobile category function to window
+          window.showMobileCategory = function(category) {
+            console.log('📱 MOBILE-ONLY: Showing category:', category);
+            const modelsGrid = document.getElementById('mobile-models-grid');
+            if (!modelsGrid) return;
+
+            if (!window.allData || window.allData.length === 0) {
+              modelsGrid.innerHTML = '<div style="padding: 20px; color: #666; font-style: italic;">Brak danych modeli</div>';
+              return;
+            }
+
+            const modelsToShow = category === 'wszystkie' ?
+              window.allData.filter(item => item.Typ === 'model') :
+              window.allData.filter(item => item.Typ === 'model' && item.Kategoria === category);
+
+            console.log('📱 MOBILE-ONLY: Models to show:', modelsToShow.length);
+
+            const modelsHTML = modelsToShow.map(item => {
+              const modelPath = item.Model || `chairs/${item.Nazwa || 'Default'}.glb`;
+              const iconPath = item.Ikona || `icons/${item.Nazwa || 'chair'}_icon.png`;
+
+              return `
+                <div onclick="loadMobileModel('${modelPath}')" style="
+                  background: white;
+                  border-radius: 8px;
+                  padding: 10px;
+                  cursor: pointer;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                  transition: transform 0.2s;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  <img src="${iconPath}" alt="${item.Nazwa}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" onerror="this.src='icons/chair_icon.png'">
+                  <div style="font-size: 12px; margin-top: 8px; color: #555;">${item.Nazwa || 'Model'}</div>
+                </div>
+              `;
+            }).join('');
+
+            modelsGrid.innerHTML = modelsHTML || '<div style="padding: 20px; color: #666; font-style: italic;">Brak modeli w tej kategorii</div>';
+          };
+
+          // Add mobile model loading function
+          window.loadMobileModel = function(modelPath) {
+            console.log('📱 MOBILE-ONLY: Loading model:', modelPath);
+            if (window.loadModel) {
+              // Find the model data
+              const modelData = window.allData.find(item => (item.Model || `chairs/${item.Nazwa}.glb`) === modelPath);
+              if (modelData) {
+                window.loadModel(modelData);
+              }
+            } else {
+              console.error('📱 MOBILE-ONLY: loadModel function not available');
+            }
+          };
+
+          // Show all models by default
+          setTimeout(() => window.showMobileCategory('wszystkie'), 100);
+        } else {
+          mobilePanel.style.display = 'block';
+          mobilePanel.style.visibility = 'visible';
+          mobilePanel.style.opacity = '1';
+          mobilePanel.style.backgroundColor = 'white';
+          console.log('📱 Mobile panel shown');
         }
 
-        // Adjust canvas for mobile with desktop sidebar
+        // Adjust canvas for mobile with mobile panel
         const canvasContainer = document.getElementById('canvas-container');
         if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 460px) !important';
+          canvasContainer.style.width = 'calc(100% - 280px) !important';
           canvasContainer.style.height = '100vh !important';
           canvasContainer.style.display = 'block !important';
           canvasContainer.style.position = 'relative !important';
-          console.log('📱 Canvas container sized for desktop UI on mobile');
+          canvasContainer.style.left = '0 !important';
+          canvasContainer.style.top = '0 !important';
+          console.log('📱 Canvas container sized for mobile with mobile panel');
         }
 
         // Ensure canvas is properly sized
@@ -5806,6 +6172,16 @@ body.mobile-mode #standalone-mobile-ui {
           canvas.style.position = 'relative !important';
           console.log('📱 Canvas sized for mobile');
         }
+
+        // Force mobile categories to render
+        setTimeout(() => {
+          console.log('📱 Forcing mobile categories render...');
+          if (typeof renderMobileCategoriesOnly === 'function') {
+            renderMobileCategoriesOnly();
+          } else if (typeof renderMobileCategories === 'function') {
+            renderMobileCategories();
+          }
+        }, 500);
       }
       
       // 🔧 FALLBACK: Jeśli przyciski się nie pojawiły, spróbuj ponownie
@@ -6597,676 +6973,313 @@ body.mobile-mode #standalone-mobile-ui {
         }, 200);
       }, 100);
 
-        // 📱 MOBILE FIX: Ensure full configurator functionality on mobile
-      // Force mobile to use desktop UI with responsive proportions
-      if (window.innerWidth <= 820) {
-        console.log('📱 MOBILE: Forcing desktop UI with responsive proportions');
+        // 📱 PHYSICAL MOBILE FIX: Ensure config options appear on physical devices
+        // Add additional force for physical mobile devices
+        const isPhysicalMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-        // Force desktop sidebar to be visible and properly sized
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-          sidebar.style.display = 'block !important';
-          sidebar.style.visibility = 'visible !important';
-          sidebar.style.opacity = '1 !important';
-          sidebar.style.position = 'fixed !important';
-          sidebar.style.top = '0 !important';
-          sidebar.style.left = '0 !important';
-          sidebar.style.width = '380px !important';
-          sidebar.style.height = '100vh !important';
-          sidebar.style.zIndex = '1200 !important';
-          sidebar.style.overflow = 'hidden !important';
-          sidebar.style.paddingBottom = '100px !important';
-          console.log('📱 MOBILE: Desktop sidebar forced visible');
-        }
+        if (isPhysicalMobile) {
+          console.log('📱 PHYSICAL MOBILE: Detected physical mobile device, applying additional fixes');
 
-        // Adjust canvas for mobile with desktop sidebar
-        const canvasContainer = document.getElementById('canvas-container');
-        if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 380px) !important';
-          canvasContainer.style.height = '100vh !important';
-          canvasContainer.style.display = 'block !important';
-          canvasContainer.style.position = 'relative !important';
-          canvasContainer.style.left = '380px !important';
-          console.log('📱 MOBILE: Canvas container adjusted for desktop sidebar');
-        }
-
-        // Ensure canvas is properly sized
-        const canvas = document.getElementById('canvas');
-        if (canvas) {
-          canvas.style.width = '100% !important';
-          canvas.style.height = '100% !important';
-          canvas.style.display = 'block !important';
-          canvas.style.position = 'relative !important';
-          console.log('📱 MOBILE: Canvas sized for mobile');
-        }
-
-        // Hide mobile panel completely
-        const mobilePanel = document.getElementById('mobile-right-panel');
-        if (mobilePanel) {
-          mobilePanel.style.display = 'none !important';
-          mobilePanel.style.visibility = 'hidden !important';
-          mobilePanel.style.opacity = '0 !important';
-          console.log('📱 MOBILE: Mobile panel hidden');
-        }
-
-        // Hide welcome screen on mobile
-        const welcomeScreen = document.getElementById('welcome-screen');
-        if (welcomeScreen) {
-          welcomeScreen.style.display = 'none';
-          console.log('📱 MOBILE: Welcome screen hidden');
-        }
-
-        // Show app
-        const appElement = document.getElementById('app');
-        if (appElement) {
-          appElement.style.visibility = 'visible';
-          appElement.style.display = 'block';
-          console.log('📱 MOBILE: App made visible');
-        }
-
-        // Force show config section with delay to ensure DOM is ready
-        setTimeout(() => {
-          console.log('📱 MOBILE: About to call showScreen(config)');
-          showScreen('config');
-          console.log('📱 MOBILE: Config screen called');
-
-          // Additional force: ensure config section elements are visible
-          const configSection = document.getElementById('config-section');
-          if (configSection) {
-            configSection.style.display = 'block !important';
-            configSection.style.visibility = 'visible !important';
-            configSection.style.position = 'relative !important';
-            configSection.style.zIndex = '1000 !important';
-            configSection.style.height = 'auto !important';
-            configSection.style.minHeight = '100vh !important';
-            configSection.style.overflow = 'visible !important';
-            console.log('📱 MOBILE: Config section forced visible');
-          }
-
-          // Force render part buttons with additional delay
-          setTimeout(() => {
-            if (typeof renderPartButtons === 'function') {
-              console.log('📱 MOBILE: Calling renderPartButtons');
-              renderPartButtons();
-              console.log('📱 MOBILE: Part buttons rendered');
-
-              // Additional force: ensure part tabs are visible
-              const partTabs = document.getElementById('part-tabs');
-              if (partTabs) {
-                partTabs.style.display = 'block !important';
-                partTabs.style.visibility = 'visible !important';
-                partTabs.style.opacity = '1 !important';
-                partTabs.style.overflowX = 'auto !important';
-                partTabs.style.flexWrap = 'nowrap !important';
-                partTabs.style.gap = '12px !important';
-                partTabs.style.padding = '12px !important';
-                partTabs.style.background = '#fff !important';
-                partTabs.style.borderRadius = '12px !important';
-                partTabs.style.marginBottom = '20px !important';
-                console.log('📱 MOBILE: Part tabs forced visible');
+          // Force additional CSS for physical mobile devices
+          const physicalMobileStyle = document.createElement('style');
+          physicalMobileStyle.id = 'physical-mobile-fix';
+          physicalMobileStyle.textContent = `
+            @media (max-width: 820px) {
+              /* Force config section visibility on physical mobile */
+              #config-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 1000 !important;
+                height: auto !important;
+                min-height: 100vh !important;
               }
 
-              // Force show first part tab (Obicie/Stelaż)
-              setTimeout(() => {
-                const firstTab = document.querySelector('#part-tabs .thumbnail');
-                if (firstTab) {
-                  console.log('📱 MOBILE: Clicking first part tab');
-                  firstTab.click();
-                }
-              }, 200);
-            }
-          }, 200);
-        }, 100);
-
-        // Add comprehensive mobile CSS fixes
-        const mobileFixStyle = document.createElement('style');
-        mobileFixStyle.id = 'mobile-full-configurator-fix';
-        mobileFixStyle.textContent = `
-          @media (max-width: 820px) {
-            /* Force full configurator visibility on mobile */
-            #sidebar {
-              width: 380px !important;
-              max-width: 380px !important;
-              min-width: 380px !important;
-              padding: 20px 16px 100px 16px !important;
-              height: 100vh !important;
-              overflow-y: auto !important;
-              scroll-padding-bottom: 100px !important;
-              padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
-            }
-
-            #canvas-container {
-              width: calc(100% - 380px) !important;
-              height: 100vh !important;
-              left: 380px !important;
-            }
-
-            #canvas {
-              width: 100% !important;
-              height: 100% !important;
-              display: block !important;
-            }
-
-            /* Force config section visibility */
-            #config-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              position: relative !important;
-              z-index: 1000 !important;
-              height: auto !important;
-              min-height: 100vh !important;
-              overflow: visible !important;
-            }
-
-            /* Force part tabs visibility and proper layout */
-            #part-tabs {
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              overflow-x: auto !important;
-              flex-wrap: nowrap !important;
-              gap: 12px !important;
-              padding: 12px !important;
-              background: #fff !important;
-              border-radius: 12px !important;
-              margin-bottom: 20px !important;
-            }
-
-            /* Force material sections visibility */
-            #materials-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              height: auto !important;
-              overflow: visible !important;
-            }
-
-            /* Force collection groups visibility and proper scrolling */
-            .collection-accordion-group {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              max-height: 300px !important;
-              overflow-y: auto !important;
-              margin-bottom: 20px !important;
-            }
-
-            /* Force collection sections to be properly visible */
-            .collection-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              margin-bottom: 20px !important;
-            }
-
-            /* Force collection materials row visibility */
-            .collection-materials-row {
-              display: grid !important;
-              grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
-              gap: 12px !important;
-              padding: 12px !important;
-            }
-
-            /* Force thumbnails to be clickable and visible */
-            .thumbnail {
-              pointer-events: auto !important;
-              cursor: pointer !important;
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              width: 80px !important;
-              height: 80px !important;
-              min-width: 80px !important;
-              min-height: 80px !important;
-            }
-
-            /* Force part buttons to be clickable */
-            .simple-part-btn {
-              pointer-events: auto !important;
-              cursor: pointer !important;
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              min-height: 50px !important;
-              font-size: 14px !important;
-              padding: 12px 16px !important;
-            }
-
-            /* Force thumbnail wrapper visibility */
-            .thumbnail-wrapper {
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              flex-direction: column !important;
-              align-items: center !important;
-            }
-
-            /* Force thumbnail captions */
-            .thumbnail-caption {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              font-size: 12px !important;
-              text-align: center !important;
-              margin-top: 8px !important;
-              color: #333 !important;
-            }
-
-            /* Force sidebar proper height and scrolling */
-            #sidebar {
-              height: 100vh !important;
-              overflow-y: auto !important;
-              padding-bottom: 150px !important;
-            }
-
-            /* Force model section visibility */
-            #model-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            /* Force legs section visibility */
-            #legs-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            /* Force parts section visibility */
-            #parts-section {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            /* Force category buttons visibility */
-            #category-buttons {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              margin-bottom: 20px !important;
-            }
-
-            /* Force special categories container */
-            #special-categories-container {
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              flex-wrap: wrap !important;
-              gap: 8px !important;
-              margin-bottom: 12px !important;
-            }
-
-            /* Force category buttons container */
-            #category-buttons-container {
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              flex-wrap: wrap !important;
-              gap: 8px !important;
-            }
-
-            /* Force category buttons */
-            .category-button {
-              display: inline-flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              pointer-events: auto !important;
-              cursor: pointer !important;
-            }
-
-            /* Force mobile categories to show */
-            .category-button.special-category {
-              display: inline-flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            .category-button.promotion {
-              display: inline-flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            .category-button.bestseller {
-              display: inline-flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-
-            /* Hide mobile-specific panels */
-            #mobile-right-panel {
-              display: none !important;
-              visibility: hidden !important;
-              opacity: 0 !important;
-            }
-
-            /* Hide rotation message on mobile */
-            #rotation-message {
-              display: none !important;
-            }
-
-            /* Hide export panel on mobile */
-            #export-panel {
-              display: none !important;
-            }
-
-            /* Hide mobile-specific UI container */
-            #mobile-ui-container {
-              display: none !important;
-            }
-
-            /* Hide standalone mobile UI */
-            #standalone-mobile-ui {
-              display: none !important;
-            }
-
-            /* Hide mobile welcome popup */
-            #mobile-welcome-popup {
-              display: none !important;
-            }
-
-            /* Hide PWA success screen mobile section */
-            #pwa-category-section {
-              display: none !important;
-            }
-
-            /* Hide config overview button on mobile (using popup instead) */
-            #config-overview-button {
-              display: none !important;
-            }
-
-            /* Hide view in room button on mobile */
-            #view-in-room-button {
-              display: none !important;
-            }
-
-            /* Hide QR button on mobile */
-            #qr-button {
-              display: none !important;
-            }
-
-            /* Hide AR button on mobile */
-            #ar-button {
-              display: none !important;
-            }
-
-            /* Hide bottom toolbar on mobile initially */
-            #bottom-toolbar {
-              display: none !important;
-            }
-
-            /* Hide HDR panel on mobile */
-            #hdr-panel {
-              display: none !important;
-            }
-
-            /* Hide brightness panel on mobile */
-            #brightness-panel {
-              display: none !important;
-            }
-
-            /* Hide dimension overlay on mobile */
-            #dimension-overlay {
-              display: none !important;
-            }
-
-            /* Hide AR popup on mobile */
-            #ar-popup {
-              display: none !important;
-            }
-
-            /* Hide QR popup on mobile */
-            #qr-popup {
-              display: none !important;
-            }
-
-            /* Hide PWA install container on mobile */
-            #pwa-install-container {
-              display: none !important;
-            }
-
-            /* Hide admin link on mobile */
-            #admin-link {
-              display: none !important;
-            }
-
-            /* Hide camera debug panel on mobile */
-            #camera-debug-panel {
-              display: none !important;
-            }
-
-            /* Hide XR controls on mobile */
-            #xr-exit-btn {
-              display: none !important;
-            }
-
-            #xr-reticle {
-              display: none !important;
-            }
-
-            /* Hide welcome screen on mobile */
-            #welcome-screen {
-              display: none !important;
-            }
-
-            /* Hide PWA success screen on mobile */
-            #pwa-success-screen {
-              display: none !important;
-            }
-
-            /* Hide rotation overlay on mobile */
-            #rotation-overlay {
-              display: none !important;
-            }
-
-            /* Hide custom loader on mobile */
-            #custom-loader {
-              display: none !important;
-            }
-
-            /* Hide model loader on mobile */
-            #model-loader {
-              display: none !important;
-            }
-
-            /* Hide email modal on mobile */
-            #emailModal {
-              display: none !important;
-            }
-
-            /* Hide success message on mobile */
-            #success-message {
-              display: none !important;
-            }
-
-            /* Hide search functionality on mobile */
-            #search-toggle {
-              display: none !important;
-            }
-
-            #search-panel {
-              display: none !important;
-            }
-
-            #search-input {
-              display: none !important;
-            }
-
-            #search-results {
-              display: none !important;
-            }
-
-            #search-container {
-              display: none !important;
-            }
-
-            #search-filter-indicator {
-              display: none !important;
-            }
-
-            /* Hide back to models container on mobile */
-            #back-to-models-container {
-              display: none !important;
-            }
-
-            /* Hide overview icons on mobile */
-            #overview-icons {
-              display: none !important;
-            }
-
-            /* Hide popup overview icons on mobile */
-            #popup-overview-icons {
-              display: none !important;
-            }
-
-            #popup-overview-details {
-              display: none !important;
-            }
-
-            #popup-overview-total-price {
-              display: none !important;
-            }
-
-            #popup-total-original {
-              display: none !important;
-            }
-
-            #popup-discount-info {
-              display: none !important;
-            }
-
-            #popup-buy-button {
-              display: none !important;
-            }
-
-            #config-popup-close {
-              display: none !important;
-            }
-
-            #config-overview-popup {
-              display: none !important;
-            }
-
-            /* Hide order summary icons on mobile */
-            #order-summary-icons {
-              display: none !important;
-            }
-
-            /* Hide config overview popup on mobile */
-            #config-overview-popup {
-              display: none !important;
-            }
-
-            /* Hide buy button on mobile */
-            #buy-button {
-              display: none !important;
-            }
-
-            /* Hide summary on mobile */
-            #summary {
-              display: none !important;
-            }
-
-            /* Hide material options on mobile */
-            #material-options {
-              display: none !important;
-            }
-
-            /* Hide collection container on mobile */
-            #collection-container {
-              display: none !important;
-            }
-
-            #collection-icons {
-              display: none !important;
-            }
-
-            #material-panel-viewer {
-              display: none !important;
-            }
-
-            /* Hide legs thumbnails on mobile */
-            #legs-thumbnails {
-              display: none !important;
-            }
-
-            /* Hide model thumbnails on mobile */
-            #model-thumbnails {
-              display: none !important;
-            }
-
-            /* Hide part tabs on mobile */
-            #part-tabs {
-              display: none !important;
-            }
-
-            /* Hide materials section on mobile */
-            #materials-section {
-              display: none !important;
-            }
-
-            /* Hide parts section on mobile */
-            #parts-section {
-              display: none !important;
-            }
-
-            /* Hide legs section on mobile */
-            #legs-section {
-              display: none !important;
-            }
-
-            /* Hide model section on mobile */
-            #model-section {
-              display: none !important;
-            }
-
-            /* Hide category buttons on mobile */
-            #category-buttons {
-              display: none !important;
-            }
-
-            #special-categories-container {
-              display: none !important;
-            }
-
-            #category-buttons-container {
-              display: none !important;
-            }
-
-            /* Hide sidebar on mobile */
-            #sidebar {
-              display: none !important;
-            }
-
-            /* Hide app on mobile */
-            #app {
-              display: none !important;
-            }
-
-            /* Hide canvas container on mobile */
-            #canvas-container {
-              display: none !important;
-            }
-
-            /* Hide canvas on mobile */
-            #canvas {
-              display: none !important;
-            }
-          }
-        `;
-
-        // Remove existing style if present
-        const existingMobileStyle = document.getElementById('mobile-full-configurator-fix');
-        if (existingMobileStyle) existingMobileStyle.remove();
-
-        // Add new style
-        document.head.appendChild(mobileFixStyle);
-
-        console.log('📱 MOBILE: Applied comprehensive mobile fixes for full configurator functionality');
-      }
+              /* Force part tabs visibility and proper layout */
+              #part-tabs {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                overflow-x: auto !important;
+                flex-wrap: nowrap !important;
+                gap: 12px !important;
+                padding: 12px !important;
+                background: #fff !important;
+                border-radius: 12px !important;
+                margin-bottom: 20px !important;
+              }
+
+              /* Force material sections visibility */
+              #materials-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                height: auto !important;
+                overflow: visible !important;
+              }
+
+              /* Force collection groups visibility and proper scrolling */
+              .collection-accordion-group {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                max-height: 300px !important;
+                overflow-y: auto !important;
+                margin-bottom: 20px !important;
+              }
+
+              /* Force collection sections to be properly visible */
+              .collection-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                margin-bottom: 20px !important;
+              }
+
+              /* Force collection materials row visibility */
+              .collection-materials-row {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
+                gap: 12px !important;
+                padding: 12px !important;
+              }
+
+              /* Force thumbnails to be clickable and visible */
+              .thumbnail {
+                pointer-events: auto !important;
+                cursor: pointer !important;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                width: 80px !important;
+                height: 80px !important;
+                min-width: 80px !important;
+                min-height: 80px !important;
+              }
+
+              /* Force part buttons to be clickable */
+              .simple-part-btn {
+                pointer-events: auto !important;
+                cursor: pointer !important;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                min-height: 50px !important;
+                font-size: 14px !important;
+                padding: 12px 16px !important;
+              }
+
+              /* Force thumbnail wrapper visibility */
+              .thumbnail-wrapper {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                flex-direction: column !important;
+                align-items: center !important;
+              }
+
+              /* Force thumbnail captions */
+              .thumbnail-caption {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                font-size: 12px !important;
+                text-align: center !important;
+                margin-top: 8px !important;
+                color: #333 !important;
+              }
+
+              /* Force sidebar proper height and scrolling */
+              #sidebar {
+                height: 100vh !important;
+                overflow-y: auto !important;
+                padding-bottom: 150px !important;
+              }
+
+              /* Force model section visibility */
+              #model-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+
+              /* Force legs section visibility */
+              #legs-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+
+              /* Force parts section visibility */
+              #parts-section {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+              }
+            }
+          `;
+
+          // Remove existing style if present
+          const existingStyle = document.getElementById('physical-mobile-fix');
+          if (existingStyle) existingStyle.remove();
+
+          // Add new style
+          document.head.appendChild(physicalMobileStyle);
+
+          // Additional JavaScript force after a longer delay for physical devices
+          setTimeout(() => {
+            console.log('📱 PHYSICAL MOBILE: Applying additional JavaScript fixes');
+
+            // Force config section visibility again
+            const configSection = document.getElementById('config-section');
+            if (configSection) {
+              configSection.style.display = 'block';
+              configSection.style.visibility = 'visible';
+              configSection.style.opacity = '1';
+              configSection.style.position = 'relative';
+              configSection.style.zIndex = '1000';
+              configSection.style.height = 'auto';
+              configSection.style.minHeight = '100vh';
+            }
+
+            // Force part tabs container
+            const partTabs = document.getElementById('part-tabs');
+            if (partTabs) {
+              partTabs.style.display = 'flex';
+              partTabs.style.visibility = 'visible';
+              partTabs.style.opacity = '1';
+              partTabs.style.overflowX = 'auto';
+              partTabs.style.flexWrap = 'nowrap';
+              partTabs.style.gap = '12px';
+              partTabs.style.padding = '12px';
+              partTabs.style.background = '#fff';
+              partTabs.style.borderRadius = '12px';
+              partTabs.style.marginBottom = '20px';
+            }
+
+            // Force materials section
+            const materialsSection = document.getElementById('materials-section');
+            if (materialsSection) {
+              materialsSection.style.display = 'block';
+              materialsSection.style.visibility = 'visible';
+              materialsSection.style.opacity = '1';
+              materialsSection.style.height = 'auto';
+              materialsSection.style.overflow = 'visible';
+            }
+
+            // Force collection groups
+            const collectionGroups = document.querySelectorAll('.collection-accordion-group');
+            collectionGroups.forEach(group => {
+              group.style.display = 'block';
+              group.style.visibility = 'visible';
+              group.style.opacity = '1';
+              group.style.maxHeight = '300px';
+              group.style.overflowY = 'auto';
+              group.style.marginBottom = '20px';
+            });
+
+            // Force collection sections
+            const collectionSections = document.querySelectorAll('.collection-section');
+            collectionSections.forEach(section => {
+              section.style.display = 'block';
+              section.style.visibility = 'visible';
+              section.style.opacity = '1';
+              section.style.marginBottom = '20px';
+            });
+
+            // Force materials rows
+            const materialRows = document.querySelectorAll('.collection-materials-row');
+            materialRows.forEach(row => {
+              row.style.display = 'grid';
+              row.style.gridTemplateColumns = 'repeat(auto-fill, minmax(80px, 1fr))';
+              row.style.gap = '12px';
+              row.style.padding = '12px';
+            });
+
+            // Force thumbnails to be interactive and properly sized
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => {
+              thumb.style.pointerEvents = 'auto';
+              thumb.style.cursor = 'pointer';
+              thumb.style.display = 'flex';
+              thumb.style.visibility = 'visible';
+              thumb.style.opacity = '1';
+              thumb.style.width = '80px';
+              thumb.style.height = '80px';
+              thumb.style.minWidth = '80px';
+              thumb.style.minHeight = '80px';
+            });
+
+            // Force part buttons
+            const partButtons = document.querySelectorAll('.simple-part-btn');
+            partButtons.forEach(btn => {
+              btn.style.pointerEvents = 'auto';
+              btn.style.cursor = 'pointer';
+              btn.style.display = 'flex';
+              btn.style.visibility = 'visible';
+              btn.style.opacity = '1';
+              btn.style.minHeight = '50px';
+              btn.style.fontSize = '14px';
+              btn.style.padding = '12px 16px';
+            });
+
+            // Force thumbnail wrappers
+            const thumbWrappers = document.querySelectorAll('.thumbnail-wrapper');
+            thumbWrappers.forEach(wrapper => {
+              wrapper.style.display = 'flex';
+              wrapper.style.visibility = 'visible';
+              wrapper.style.opacity = '1';
+              wrapper.style.flexDirection = 'column';
+              wrapper.style.alignItems = 'center';
+            });
+
+            // Force thumbnail captions
+            const thumbCaptions = document.querySelectorAll('.thumbnail-caption');
+            thumbCaptions.forEach(caption => {
+              caption.style.display = 'block';
+              caption.style.visibility = 'visible';
+              caption.style.opacity = '1';
+              caption.style.fontSize = '12px';
+              caption.style.textAlign = 'center';
+              caption.style.marginTop = '8px';
+              caption.style.color = '#333';
+            });
+
+            // Force sidebar proper scrolling
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+              sidebar.style.height = '100vh';
+              sidebar.style.overflowY = 'auto';
+              sidebar.style.paddingBottom = '150px';
+            }
+
+            // Force other sections visibility
+            const modelSection = document.getElementById('model-section');
+            if (modelSection) {
+              modelSection.style.display = 'block';
+              modelSection.style.visibility = 'visible';
+              modelSection.style.opacity = '1';
+            }
+
+            const legsSection = document.getElementById('legs-section');
+            if (legsSection) {
+              legsSection.style.display = 'block';
+              legsSection.style.visibility = 'visible';
+              legsSection.style.opacity = '1';
+            }
+
+            const partsSection = document.getElementById('parts-section');
+            if (partsSection) {
+              partsSection.style.display = 'block';
+              partsSection.style.visibility = 'visible';
+              partsSection.style.opacity = '1';
+            }
+
+            console.log('📱 PHYSICAL MOBILE: Applied comprehensive fixes for physical mobile devices');
+          }, 500);
+        }
     }
 
   } catch (e) {
