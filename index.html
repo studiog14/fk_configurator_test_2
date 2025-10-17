@@ -132,6 +132,17 @@
         padding-bottom: 450px; /* Extra space for bottom elements */
       }
 
+      /* Hide white overlay elements on mobile */
+      #welcome-screen {
+        background: transparent !important;
+      }
+
+      /* Fix mobile panel background */
+      #mobile-right-panel {
+        background: #fff !important;
+        box-shadow: -6px 0 24px rgba(0,0,0,0.06) !important;
+      }
+
       /* Category buttons section */
       #category-buttons {
         flex-shrink: 0;
@@ -1502,17 +1513,48 @@
     object-fit: contain !important;
   }
 
-  /* Mobile config section - responsive layout */
-  #config-section {
-    padding-bottom: 60px !important;
-    max-height: calc(100vh - 180px) !important;
-  }
+      /* Mobile config section - responsive layout */
+      #config-section {
+        padding-bottom: 60px !important;
+        max-height: calc(100vh - 180px) !important;
+      }
 
-  /* Mobile options grid - responsive layout */
-  .options-grid {
-    gap: 8px !important;
-    padding-bottom: 30px !important;
-  }
+      /* Mobile options grid - responsive layout */
+      .options-grid {
+        gap: 8px !important;
+        padding-bottom: 30px !important;
+      }
+
+      /* Hide text labels on mobile */
+      #legs-section h3,
+      #materials-section h3,
+      .selection-section h3 {
+        display: none !important;
+      }
+
+      /* Fix part tabs layout - stack vertically with materials below */
+      #part-tabs {
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+      }
+
+      #part-tabs .part-btn-row {
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+
+      #part-tabs .simple-part-btn {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+      }
+
+      /* Ensure materials sections appear below part buttons */
+      #fabric-panels,
+      #legs-panels {
+        margin-top: 20px !important;
+        width: 100% !important;
+      }
 
   /* Mobile part tabs - responsive layout */
   #part-tabs {
@@ -6212,9 +6254,9 @@ body.mobile-mode #standalone-mobile-ui {
     }
   }
 
-  async function loadModel(variant) {
+    async function loadModel(variant) {
   console.log('📱 loadModel called with variant:', variant);
-  
+
   // 🔥 MEGA DEBUG NA POCZĄTKU: sprawdź krzesło
   console.log('🔥🔥🔥 LOADMODEL START - CHAIR DEBUG:', {
     nazwa: variant?.Nazwa,
@@ -6223,12 +6265,29 @@ body.mobile-mode #standalone-mobile-ui {
     wariant: variant?.Wariant,
     isKubelek: variant?.Grupa && variant.Grupa.toLowerCase() === 'kubełek'
   });
-  
+
   // Ukryj welcome screen przy wyborze krzesła
   const welcomeScreen = document.getElementById('welcome-screen');
   if (welcomeScreen) {
     console.log('📱 Hiding welcome screen');
     welcomeScreen.style.display = 'none';
+  }
+
+  // 📱 MOBILE: Hide model list and show config section after chair selection
+  if (window.innerWidth <= 820) {
+    console.log('📱 MOBILE: Hiding model list and showing config section');
+    const modelSection = document.getElementById('model-section');
+    const configSection = document.getElementById('config-section');
+
+    if (modelSection) {
+      modelSection.style.display = 'none';
+      console.log('📱 Model section hidden');
+    }
+
+    if (configSection) {
+      configSection.style.display = 'block';
+      console.log('📱 Config section shown');
+    }
   }
   
   if (currentModelContainer) {
