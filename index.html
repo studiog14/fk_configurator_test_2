@@ -226,10 +226,10 @@
     /* 📱 Extra small screens (iPhone XR, iPhone 11, etc.) */
     @media (max-width: 500px) {
       #sidebar {
-        width: 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
-        padding: 16px 12px 200px 12px !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+        padding: 12px 8px 150px 8px !important;
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
@@ -243,12 +243,12 @@
       }
 
       #canvas-container {
-        width: calc(100% - 280px) !important;
+        width: calc(100% - 260px) !important;
         display: block !important;
         visibility: visible !important;
         position: fixed !important;
         top: 0 !important;
-        left: 280px !important;
+        left: 260px !important;
         height: 100vh !important;
       }
 
@@ -260,40 +260,40 @@
       }
 
       .thumbnail {
-        width: 85px !important;
-        height: 85px !important;
-        min-height: 85px !important;
+        width: 75px !important;
+        height: 75px !important;
+        min-height: 75px !important;
       }
 
       .thumbnail-caption {
-        font-size: 11px !important;
-        margin-top: 4px !important;
+        font-size: 10px !important;
+        margin-top: 3px !important;
       }
 
       .category-button {
-        padding: 6px 12px !important;
-        font-size: 11px !important;
-        min-width: 65px !important;
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        min-width: 60px !important;
       }
 
       #config-section {
-        padding-bottom: 40px !important;
-        max-height: calc(100vh - 120px) !important;
+        padding-bottom: 30px !important;
+        max-height: calc(100vh - 100px) !important;
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
       }
 
       #model-section .options-grid {
-        max-height: calc(100vh - 300px) !important;
-        gap: 6px !important;
+        max-height: calc(100vh - 250px) !important;
+        gap: 4px !important;
         display: flex !important;
         flex-wrap: wrap !important;
       }
 
       .options-grid {
-        gap: 6px !important;
-        padding-bottom: 20px !important;
+        gap: 4px !important;
+        padding-bottom: 15px !important;
         display: flex !important;
         flex-wrap: wrap !important;
       }
@@ -2937,105 +2937,22 @@ body.mobile-mode #standalone-mobile-ui {
     <script>
       console.log('📱 MOBILE FIX: Starting aggressive mobile detection...');
 
-      // 🎯 AGGRESSIVE MOBILE DETECTION - Multiple fallback methods
+      // 🎯 SIMPLIFIED AND RELIABLE MOBILE DETECTION
       (function(){
-        // Method 1: Screen width detection (improved for iPhone XR)
+        // Simple detection based on screen width and touch capability
         const isMobileWidth = window.innerWidth <= 900;
-
-        // Method 2: User agent detection (improved for iOS devices)
-        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        // Method 3: Touch capability detection
         const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isSmallScreen = window.screen.width <= 500 || window.screen.height <= 900;
 
-        // Method 4: Platform detection (iPad on iOS 13+)
-        const isMobilePlatform = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+        // Force mobile mode for any small screen or touch device
+        const shouldBeMobile = isMobileWidth || hasTouch || isMobileUA || isSmallScreen;
 
-        // Method 5: Screen size detection (improved for iPhone XR)
-        const isSmallScreen = window.screen.width <= 900 || window.screen.height <= 900;
-
-        // Method 6: Device pixel ratio detection (iPhone XR has high DPI)
-        const hasHighDPI = window.devicePixelRatio > 1.5;
-
-        // Method 7: Specific iPhone XR detection
-        const isIphoneXR = /iPhone.*OS 12_/.test(navigator.userAgent) ||
-                          (navigator.userAgent.includes('iPhone') && window.screen.width === 414 && window.screen.height === 896);
-
-        // Method 8: Viewport detection for small screens
-        const isSmallViewport = window.innerWidth <= 500 || window.innerHeight <= 900;
-
-        // Method 9: iPhone XR specific detection (414x896 resolution)
-        const isIphoneXRSpecific = window.screen.width === 414 && window.screen.height === 896 && window.devicePixelRatio >= 2;
-
-        // Method 10: iPhone XR detection by exact user agent pattern
-        const isIphoneXRUA = /iPhone.*OS 12_/.test(navigator.userAgent) && window.screen.width === 414;
-
-        // Method 11: iPhone XR detection by screen dimensions and pixel ratio
-        const isIphoneXRDimensions = window.screen.width === 414 && window.screen.height === 896 && window.devicePixelRatio === 2;
-
-        // Method 12: Generic small iOS device detection
-        const isSmallIOS = /iPhone/.test(navigator.userAgent) && window.screen.width <= 430 && window.screen.height <= 900;
-
-        // Method 13: iPhone XR specific by exact dimensions and user agent
-        const isIphoneXRExact = navigator.userAgent.includes('iPhone') &&
-                               window.screen.width === 414 &&
-                               window.screen.height === 896 &&
-                               window.devicePixelRatio === 2;
-
-        // Method 14: iPhone 11/12/13 mini detection
-        const isIphoneMini = navigator.userAgent.includes('iPhone') &&
-                            window.screen.width === 375 &&
-                            window.screen.height === 812 &&
-                            window.devicePixelRatio === 3;
-
-        // Method 15: iPhone XR detection by exact user agent pattern
-        const isIphoneXRExactUA = /iPhone.*OS 12_.*414x896/i.test(navigator.userAgent) ||
-                                 (navigator.userAgent.includes('iPhone') &&
-                                  navigator.userAgent.includes('OS 12') &&
-                                  (window.screen.width === 414 || window.screen.height === 896));
-
-        // Method 16: Force mobile for iPhone XR dimensions regardless of UA
-        const isIphoneXRDimensionsOnly = window.screen.width === 414 &&
-                                        window.screen.height === 896 &&
-                                        window.devicePixelRatio >= 2;
-
-        // Method 17: Force mobile for any iPhone with small screen
-        const isAnySmalliPhone = /iPhone/.test(navigator.userAgent) &&
-                                (window.screen.width <= 430 || window.screen.height <= 900);
-
-        // Method 18: Force mobile for any device with 414x896 resolution (iPhone XR/11)
-        const is414x896Device = window.screen.width === 414 && window.screen.height === 896;
-
-        // Combine all detection methods with improved logic for iPhone XR
-        const isMobileDevice = isMobileWidth || isMobileUA || hasTouch || isMobilePlatform || isSmallScreen || isIphoneXR || isSmallViewport || isIphoneXRSpecific || isIphoneXRUA || isIphoneXRDimensions || isSmallIOS || isIphoneXRExact || isIphoneMini || isIphoneXRExactUA || isIphoneXRDimensionsOnly || isAnySmalliPhone || is414x896Device;
-
-        // FORCE MOBILE MODE for iPhone XR and similar devices
-        if (isIphoneXRExact || isIphoneXRExactUA || isIphoneXRDimensionsOnly || isAnySmalliPhone || is414x896Device || window.innerWidth <= 500) {
+        if (shouldBeMobile) {
           document.body.classList.add('mobile-mode');
-          console.log('📱 iPhone XR/SMALL DEVICE DETECTED - FORCED MOBILE MODE');
-        }
-
-        console.log('📱 Mobile detection details:', {
-          width: window.innerWidth,
-          height: window.innerHeight,
-          screenWidth: window.screen.width,
-          screenHeight: window.screen.height,
-          devicePixelRatio: window.devicePixelRatio,
-          userAgent: navigator.userAgent.substring(0, 50),
-          hasTouch,
-          isMobileUA,
-          isMobilePlatform,
-          isSmallScreen,
-          hasHighDPI,
-          isIphoneXR,
-          isSmallViewport,
-          finalResult: isMobileDevice
-        });
-
-        // FORCE MOBILE MODE for testing on smaller devices (improved for iPhone XR)
-        if (isMobileDevice || window.innerWidth <= 500 || isIphoneXR) {
-          document.body.classList.add('mobile-mode');
-          console.log('📱 MOBILE MODE ACTIVATED');
+          console.log('📱 MOBILE MODE ACTIVATED - Width:', window.innerWidth, 'Touch:', hasTouch, 'UA:', isMobileUA, 'Screen:', isSmallScreen);
+        } else {
+          console.log('🖥️ DESKTOP MODE - Width:', window.innerWidth, 'Touch:', hasTouch, 'UA:', isMobileUA);
         }
 
         // Global mobile check function
@@ -5457,8 +5374,24 @@ body.mobile-mode #standalone-mobile-ui {
           console.log('📱 Creating mobile panel...');
           mobilePanel = document.createElement('aside');
           mobilePanel.id = 'mobile-right-panel';
-          mobilePanel.style.cssText = 'position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: #fff; border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -6px 0 24px rgba(0,0,0,0.06); z-index: 150; overflow-y: auto; padding: 12px; display: block;';
+          mobilePanel.style.cssText = 'position: fixed; top: 0; right: 0; width: 280px; height: 100vh; background: #fff; border-left: 1px solid rgba(0,0,0,0.08); box-shadow: -6px 0 24px rgba(0,0,0,0.06); z-index: 150; overflow-y: auto; padding: 12px; display: block; visibility: visible; opacity: 1;';
+          mobilePanel.innerHTML = `
+            <div style="padding: 15px; background: white; height: 100vh; overflow-y: auto;">
+              <div style="margin-bottom: 20px; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #333;">📱 Konfigurator Krzeseł</h3>
+                <div id="mobile-category-buttons" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px;">
+                  <button onclick="showMobileCategory('wszystkie')" style="padding: 8px 16px; background: #F5C842; border: none; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333; font-weight: 600;">Wszystkie</button>
+                  <button onclick="showMobileCategory('krzesła')" style="padding: 8px 16px; background: white; border: 2px solid #ddd; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333;">Krzesła</button>
+                  <button onclick="showMobileCategory('hokery')" style="padding: 8px 16px; background: white; border: 2px solid #ddd; border-radius: 20px; font-size: 14px; cursor: pointer; color: #333;">Hokery</button>
+                </div>
+                <div id="mobile-models-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; text-align: center;">
+                  <div style="padding: 20px; color: #666; font-style: italic;">Ładowanie modeli...</div>
+                </div>
+              </div>
+            </div>
+          `;
           (document.getElementById('app') || document.body).appendChild(mobilePanel);
+          console.log('✅ Mobile panel created with content');
         } else {
           mobilePanel.style.display = 'block';
           mobilePanel.style.visibility = 'visible';
@@ -5508,6 +5441,42 @@ body.mobile-mode #standalone-mobile-ui {
           toolbar.style.display = 'none';
           console.log('📱 Bottom toolbar hidden initially on mobile');
         }
+
+        // Force mobile categories to render
+        setTimeout(() => {
+          console.log('📱 Forcing mobile categories render...');
+          if (typeof renderMobileCategoriesOnly === 'function') {
+            renderMobileCategoriesOnly();
+          } else if (typeof renderMobileCategories === 'function') {
+            renderMobileCategories();
+          }
+        }, 500);
+      }
+
+        // Show app
+        const appElement = document.getElementById('app');
+        if (appElement) {
+          appElement.style.visibility = 'visible';
+          appElement.style.display = 'block';
+          console.log('📱 App made visible');
+        }
+
+        // Hide bottom toolbar initially on mobile
+        const toolbar = document.getElementById('bottom-toolbar');
+        if (toolbar) {
+          toolbar.style.display = 'none';
+          console.log('📱 Bottom toolbar hidden initially on mobile');
+        }
+
+        // Force mobile categories to render
+        setTimeout(() => {
+          console.log('📱 Forcing mobile categories render...');
+          if (typeof renderMobileCategoriesOnly === 'function') {
+            renderMobileCategoriesOnly();
+          } else if (typeof renderMobileCategories === 'function') {
+            renderMobileCategories();
+          }
+        }, 500);
       }
       } catch(e) { console.warn('Early mobile init failed:', e); }
       
