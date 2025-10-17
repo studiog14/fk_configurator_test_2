@@ -6289,12 +6289,27 @@ body.mobile-mode #standalone-mobile-ui {
 
     if (modelSection) {
       modelSection.style.display = 'none';
+      modelSection.style.visibility = 'hidden';
+      modelSection.style.opacity = '0';
       console.log('📱 Model section hidden');
     }
 
     if (configSection) {
       configSection.style.display = 'block';
+      configSection.style.visibility = 'visible';
+      configSection.style.opacity = '1';
+      configSection.style.position = 'relative';
+      configSection.style.zIndex = '1000';
       console.log('📱 Config section shown');
+    }
+
+    // Hide mobile panel after chair selection
+    const mobilePanel = document.getElementById('mobile-right-panel');
+    if (mobilePanel) {
+      mobilePanel.style.display = 'none';
+      mobilePanel.style.visibility = 'hidden';
+      mobilePanel.style.opacity = '0';
+      console.log('📱 Mobile panel hidden after chair selection');
     }
   }
   
