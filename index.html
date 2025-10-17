@@ -6148,10 +6148,82 @@ body.mobile-mode #standalone-mobile-ui {
       }
     }
 
-  // DISABLED: Mobile right panel list rendering - prevent mobile UI interference
+  // ENABLED: Mobile right panel list rendering - proper mobile UI
   function renderMobileRightPanelList(selectedCategory = 'Wszystkie') {
-    console.log('📱 renderMobileRightPanelList called but DISABLED - using desktop UI instead');
-    return;
+    console.log('📱 renderMobileRightPanelList called for category:', selectedCategory);
+
+    const mobilePanel = document.getElementById('mobile-right-panel');
+    if (!mobilePanel) {
+      console.error('📱 Mobile panel not found');
+      return;
+    }
+
+    // Clear existing content
+    mobilePanel.innerHTML = '';
+
+    // Create proper mobile UI structure
+    const container = document.createElement('div');
+    container.style.cssText = 'padding:15px;background:white;height:100vh;overflow-y:auto;';
+
+    // Add category buttons at the top
+    const categorySection = document.createElement('div');
+    categorySection.id = 'category-buttons';
+    categorySection.style.marginBottom = '20px';
+
+    const title = document.createElement('h3');
+    title.style.cssText = 'margin-bottom: 10px; font-size: 16px; color: #555;';
+    title.textContent = 'Kategorie:';
+
+    const specialContainer = document.createElement('div');
+    specialContainer.id = 'special-categories-container';
+    specialContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;';
+
+    const regularContainer = document.createElement('div');
+    regularContainer.id = 'category-buttons-container';
+    regularContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px;';
+
+    categorySection.appendChild(title);
+    categorySection.appendChild(specialContainer);
+    categorySection.appendChild(regularContainer);
+
+    // Add model section
+    const modelSection = document.createElement('div');
+    modelSection.id = 'model-section';
+    modelSection.style.display = 'block';
+
+    const modelTitle = document.createElement('h3');
+    modelTitle.style.cssText = 'margin-bottom: 15px; font-size: 16px; color: #555;';
+    modelTitle.textContent = 'Wybierz model:';
+
+    const thumbnailsGrid = document.createElement('div');
+    thumbnailsGrid.id = 'model-thumbnails';
+    thumbnailsGrid.className = 'options-grid';
+    thumbnailsGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding-bottom: 100px;';
+
+    modelSection.appendChild(modelTitle);
+    modelSection.appendChild(thumbnailsGrid);
+
+    container.appendChild(categorySection);
+    container.appendChild(modelSection);
+    mobilePanel.appendChild(container);
+
+    // Now render the categories and models
+    if (typeof renderCategoryButtons === 'function') {
+      renderCategoryButtons();
+    }
+
+    // Show models for selected category
+    if (selectedCategory === 'Wszystkie') {
+      renderMobileAllModels();
+    } else if (selectedCategory === 'Promocje') {
+      renderMobilePromotionalModels();
+    } else if (selectedCategory === 'Bestsellery') {
+      renderMobileBestsellerModels();
+    } else {
+      renderMobileModelsByCategory(selectedCategory);
+    }
+
+    console.log('📱 Mobile panel rendered successfully');
   }
 
     async function silentLoadModel(variant) {
