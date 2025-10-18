@@ -1422,9 +1422,9 @@
 @media (max-width: 820px) {
   /* Mobile sidebar - responsive sizing based on screen size */
   #sidebar {
-    width: 320px !important;
-    max-width: 320px !important;
-    min-width: 280px !important;
+    width: 300px !important;
+    max-width: 300px !important;
+    min-width: 260px !important;
     padding: 16px 12px 80px 12px !important;
     height: 100vh !important;
     overflow-y: auto !important;
@@ -1434,8 +1434,9 @@
 
   /* Mobile canvas - adjust for sidebar */
   #canvas-container {
-    width: calc(100% - 320px) !important;
+    width: calc(100% - 300px) !important;
     height: 100vh !important;
+    left: 300px !important;
   }
 
   #canvas {
@@ -1466,11 +1467,15 @@
 
   /* Mobile category buttons - responsive sizing */
   .category-button {
-    padding: 8px 14px !important;
-    font-size: 13px !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
     border-radius: 20px !important;
-    min-width: 90px !important;
+    min-width: 100px !important;
     text-align: center !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Mobile model section - responsive scrolling */
@@ -1482,18 +1487,18 @@
     max-height: calc(100vh - 400px) !important;
     overflow-y: auto !important;
     padding-right: 5px !important;
-    gap: 8px !important;
+    gap: 12px !important;
   }
 
   /* Mobile thumbnails - responsive sizing */
   .thumbnail-wrapper {
-    margin-bottom: 12px !important;
+    margin-bottom: 15px !important;
   }
 
   .thumbnail {
-    width: 100px !important;
-    height: 100px !important;
-    min-height: 100px !important;
+    width: 110px !important;
+    height: 110px !important;
+    min-height: 110px !important;
   }
 
   .thumbnail img {
@@ -1504,14 +1509,14 @@
 
   /* Mobile config section - responsive layout */
   #config-section {
-    padding-bottom: 60px !important;
-    max-height: calc(100vh - 180px) !important;
+    padding-bottom: 80px !important;
+    max-height: calc(100vh - 200px) !important;
   }
 
   /* Mobile options grid - responsive layout */
   .options-grid {
-    gap: 8px !important;
-    padding-bottom: 30px !important;
+    gap: 12px !important;
+    padding-bottom: 40px !important;
   }
 
   /* Mobile part tabs - responsive layout */
@@ -1519,17 +1524,17 @@
     display: flex !important;
     overflow-x: auto !important;
     flex-wrap: nowrap !important;
-    gap: 6px !important;
-    padding: 8px !important;
+    gap: 8px !important;
+    padding: 12px !important;
     justify-content: flex-start !important;
   }
 
   #part-tabs button,
   #part-tabs .part-btn {
-    width: 48px !important;
-    height: 48px !important;
-    font-size: 10px !important;
-    padding: 4px !important;
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 11px !important;
+    padding: 6px !important;
     flex: 0 0 auto !important;
   }
 
@@ -1547,17 +1552,17 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    max-height: 300px !important;
+    max-height: 320px !important;
     overflow-y: auto !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 16px !important;
   }
 
   /* Mobile collection materials - responsive grid */
   .collection-materials-row {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
-    gap: 8px !important;
-    padding: 8px !important;
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)) !important;
+    gap: 10px !important;
+    padding: 10px !important;
   }
 
   /* Mobile thumbnails - responsive functionality */
@@ -1567,36 +1572,37 @@
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    width: 70px !important;
-    height: 70px !important;
-    min-width: 70px !important;
-    min-height: 70px !important;
+    width: 75px !important;
+    height: 75px !important;
+    min-width: 75px !important;
+    min-height: 75px !important;
   }
 
   /* Mobile bottom toolbar - responsive positioning */
   #bottom-toolbar {
     left: 15px !important;
-    padding: 8px 6px !important;
-    gap: 10px !important;
+    padding: 10px 8px !important;
+    gap: 12px !important;
   }
 
   #bottom-toolbar button {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 6px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 8px !important;
   }
 
   #bottom-toolbar img {
-    width: 16px !important;
-    height: 16px !important;
+    width: 18px !important;
+    height: 18px !important;
   }
 
   /* Mobile config overview button - responsive positioning */
   #config-overview-button {
-    bottom: 15px !important;
-    left: 15px !important;
-    padding: 8px 14px !important;
-    font-size: 12px !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    min-height: 44px !important;
   }
 
   /* Hide rotation message on mobile */
@@ -5282,71 +5288,7 @@ body.mobile-mode #standalone-mobile-ui {
         // Dostosuj proporcje mobilne AFTER applyMobileMode
         setTimeout(adjustMobileProportions, 50);
         
-      // 📱 FORCE DESKTOP UI ON MOBILE - Disable mobile-specific UI logic
-      if (document.body.classList.contains('mobile-mode') || window.innerWidth <= 820) {
-        console.log('📱 Mobile mode detected - forcing desktop UI');
 
-        // Force mobile mode class to ensure CSS rules apply
-        document.body.classList.add('mobile-mode');
-
-        // HIDE mobile-specific elements
-        const mobilePanel = document.getElementById('mobile-right-panel');
-        if (mobilePanel) {
-          mobilePanel.style.display = 'none !important';
-          console.log('📱 Mobile panel hidden');
-        }
-
-        // ENSURE desktop UI is visible
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-          sidebar.style.display = 'block !important';
-          sidebar.style.visibility = 'visible !important';
-          sidebar.style.opacity = '1 !important';
-          console.log('📱 Desktop sidebar shown on mobile');
-        }
-
-        // Adjust canvas for mobile with desktop sidebar
-        const canvasContainer = document.getElementById('canvas-container');
-        if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 460px) !important';
-          canvasContainer.style.height = '100vh !important';
-          canvasContainer.style.display = 'block !important';
-          canvasContainer.style.position = 'relative !important';
-          console.log('📱 Canvas container sized for desktop UI on mobile');
-        }
-
-        // Ensure canvas is properly sized
-        const canvas = document.getElementById('canvas');
-        if (canvas) {
-          canvas.style.width = '100% !important';
-          canvas.style.height = '100% !important';
-          canvas.style.display = 'block !important';
-          canvas.style.position = 'relative !important';
-          console.log('📱 Canvas sized for mobile');
-        }
-
-        // Hide welcome screen on mobile
-        const welcomeScreen = document.getElementById('welcome-screen');
-        if (welcomeScreen) {
-          welcomeScreen.style.display = 'none';
-          console.log('📱 Welcome screen hidden on mobile');
-        }
-
-        // Show app
-        const appElement = document.getElementById('app');
-        if (appElement) {
-          appElement.style.visibility = 'visible';
-          appElement.style.display = 'block';
-          console.log('📱 App made visible');
-        }
-
-        // Hide bottom toolbar initially on mobile
-        const toolbar = document.getElementById('bottom-toolbar');
-        if (toolbar) {
-          toolbar.style.display = 'none';
-          console.log('📱 Bottom toolbar hidden initially on mobile');
-        }
-      }
       } catch(e) { console.warn('Early mobile init failed:', e); }
       
       // Nasłuchuj zmiany orientacji/rozmiaru
@@ -5891,9 +5833,9 @@ body.mobile-mode #standalone-mobile-ui {
       console.log('🎯 Calling renderCategoryButtons...');
       renderCategoryButtons();
       
-      // 🔧 MOBILE: Automatycznie ukryj welcome screen w trybie mobile
+      // 🔧 MOBILE: Proper mobile UI setup
       if (document.body.classList.contains('mobile-mode') || window.innerWidth <= 820) {
-        console.log('📱 Mobile mode detected - auto-hiding welcome screen');
+        console.log('📱 Mobile mode detected - setting up proper mobile UI');
         const welcomeScreen = document.getElementById('welcome-screen');
         if (welcomeScreen) {
           welcomeScreen.style.display = 'none';
@@ -5909,32 +5851,45 @@ body.mobile-mode #standalone-mobile-ui {
           console.log('📱 App made visible');
         }
 
-        // 🔧 FORCE DESKTOP UI: Ensure desktop sidebar is visible and mobile panel is hidden
+        // 🔧 MOBILE UI: Hide desktop sidebar and show mobile panel
         const sidebar = document.getElementById('sidebar');
         if (sidebar) {
-          sidebar.style.display = 'block !important';
-          sidebar.style.visibility = 'visible !important';
-          sidebar.style.opacity = '1 !important';
-          console.log('📱 Desktop sidebar forced visible on mobile');
+          sidebar.style.display = 'none !important';
+          sidebar.style.visibility = 'hidden !important';
+          sidebar.style.opacity = '0 !important';
+          console.log('📱 Desktop sidebar hidden on mobile');
         }
 
-        // Hide mobile panel completely
+        // Show mobile panel
         const mobilePanel = document.getElementById('mobile-right-panel');
         if (mobilePanel) {
-          mobilePanel.style.display = 'none !important';
-          mobilePanel.style.visibility = 'hidden !important';
-          mobilePanel.style.opacity = '0 !important';
-          console.log('📱 Mobile panel hidden on mobile');
+          mobilePanel.style.display = 'block !important';
+          mobilePanel.style.visibility = 'visible !important';
+          mobilePanel.style.opacity = '1 !important';
+          mobilePanel.style.position = 'fixed !important';
+          mobilePanel.style.top = '0 !important';
+          mobilePanel.style.right = '0 !important';
+          mobilePanel.style.width = '280px !important';
+          mobilePanel.style.height = '100vh !important';
+          mobilePanel.style.zIndex = '150 !important';
+          mobilePanel.style.overflowY = 'auto !important';
+          mobilePanel.style.padding = '12px !important';
+          mobilePanel.style.background = '#fff !important';
+          mobilePanel.style.borderLeft = '1px solid rgba(0,0,0,0.08) !important';
+          mobilePanel.style.boxShadow = '-6px 0 24px rgba(0,0,0,0.06) !important';
+          console.log('📱 Mobile panel shown on mobile');
         }
 
-        // Adjust canvas for mobile with desktop sidebar
+        // Adjust canvas for mobile with mobile panel
         const canvasContainer = document.getElementById('canvas-container');
         if (canvasContainer) {
-          canvasContainer.style.width = 'calc(100% - 460px) !important';
+          canvasContainer.style.width = 'calc(100% - 280px) !important';
           canvasContainer.style.height = '100vh !important';
           canvasContainer.style.display = 'block !important';
           canvasContainer.style.position = 'relative !important';
-          console.log('📱 Canvas container sized for desktop UI on mobile');
+          canvasContainer.style.left = '0 !important';
+          canvasContainer.style.right = '280px !important';
+          console.log('📱 Canvas container adjusted for mobile');
         }
 
         // Ensure canvas is properly sized
@@ -5943,7 +5898,6 @@ body.mobile-mode #standalone-mobile-ui {
           canvas.style.width = '100% !important';
           canvas.style.height = '100% !important';
           canvas.style.display = 'block !important';
-          canvas.style.position = 'relative !important';
           console.log('📱 Canvas sized for mobile');
         }
       }
@@ -6644,39 +6598,54 @@ body.mobile-mode #standalone-mobile-ui {
     setCameraView(globalCameraTargetPosition);
     enforceZoomLimits();
     updateUI();
-    // MOBILE: Force config screen to show properly on mobile with desktop UI
-    const isMobile = window.innerWidth <= 820;
-    if (!isMobile) {
-      showScreen('config');
-    } else {
-      // MOBILE: Force desktop UI and show config section
-      console.log('📱 MOBILE: Forcing desktop UI and showing config section');
+    // Always show config screen after loading model
+    console.log('📱 MOBILE: Showing config screen after model load');
+    showScreen('config');
 
-      // Ensure desktop sidebar is visible
+    // Ensure proper mobile layout
+    const isMobileWidth = window.innerWidth <= 820;
+    if (isMobileWidth) {
+      console.log('📱 MOBILE: Adjusting layout for mobile');
+
+      // Hide desktop sidebar completely on mobile
       const sidebar = document.getElementById('sidebar');
       if (sidebar) {
-        sidebar.style.display = 'block !important';
-        sidebar.style.visibility = 'visible !important';
-        sidebar.style.opacity = '1 !important';
-        sidebar.style.position = 'fixed !important';
-        sidebar.style.top = '0 !important';
-        sidebar.style.left = '0 !important';
-        sidebar.style.width = '460px !important';
-        sidebar.style.height = '100vh !important';
-        sidebar.style.zIndex = '1200 !important';
-        sidebar.style.overflow = 'hidden !important';
-        console.log('📱 MOBILE: Desktop sidebar forced visible');
+        sidebar.style.display = 'none !important';
+        sidebar.style.visibility = 'hidden !important';
+        sidebar.style.opacity = '0 !important';
+        console.log('📱 MOBILE: Desktop sidebar hidden on mobile');
       }
 
-      // Adjust canvas for mobile with desktop sidebar
+      // Show mobile panel properly
+      const mobilePanel = document.getElementById('mobile-right-panel');
+      if (mobilePanel) {
+        mobilePanel.style.display = 'block !important';
+        mobilePanel.style.visibility = 'visible !important';
+        mobilePanel.style.opacity = '1 !important';
+        mobilePanel.style.position = 'fixed !important';
+        mobilePanel.style.top = '0 !important';
+        mobilePanel.style.right = '0 !important';
+        mobilePanel.style.width = '280px !important';
+        mobilePanel.style.height = '100vh !important';
+        mobilePanel.style.zIndex = '150 !important';
+        mobilePanel.style.overflowY = 'auto !important';
+        mobilePanel.style.padding = '12px !important';
+        mobilePanel.style.background = '#fff !important';
+        mobilePanel.style.borderLeft = '1px solid rgba(0,0,0,0.08) !important';
+        mobilePanel.style.boxShadow = '-6px 0 24px rgba(0,0,0,0.06) !important';
+        console.log('📱 MOBILE: Mobile panel shown on mobile');
+      }
+
+      // Adjust canvas for mobile with mobile panel
       const canvasContainer = document.getElementById('canvas-container');
       if (canvasContainer) {
-        canvasContainer.style.width = 'calc(100% - 460px) !important';
+        canvasContainer.style.width = 'calc(100% - 280px) !important';
         canvasContainer.style.height = '100vh !important';
         canvasContainer.style.display = 'block !important';
         canvasContainer.style.position = 'relative !important';
-        canvasContainer.style.left = '460px !important';
-        console.log('📱 MOBILE: Canvas container adjusted for desktop sidebar');
+        canvasContainer.style.left = '0 !important';
+        canvasContainer.style.right = '280px !important';
+        console.log('📱 MOBILE: Canvas container adjusted for mobile');
       }
 
       // Ensure canvas is properly sized
@@ -6685,365 +6654,53 @@ body.mobile-mode #standalone-mobile-ui {
         canvas.style.width = '100% !important';
         canvas.style.height = '100% !important';
         canvas.style.display = 'block !important';
-        console.log('📱 MOBILE: Canvas sized for desktop UI');
+        console.log('📱 MOBILE: Canvas sized for mobile');
       }
 
-      // Hide mobile panel
-      const mobilePanel = document.getElementById('mobile-right-panel');
-      if (mobilePanel) {
-        mobilePanel.style.display = 'none !important';
-        console.log('📱 MOBILE: Mobile panel hidden');
-      }
-
-      // Force show config section with delay to ensure DOM is ready
+      // Force show config section immediately after model load
       setTimeout(() => {
-        console.log('📱 MOBILE: About to call showScreen(config)');
-        showScreen('config');
-        console.log('📱 MOBILE: Config screen called');
-
-        // Additional force: ensure config section elements are visible
+        console.log('📱 MOBILE: Forcing config section visibility');
         const configSection = document.getElementById('config-section');
         if (configSection) {
           configSection.style.display = 'block !important';
           configSection.style.visibility = 'visible !important';
           configSection.style.position = 'relative !important';
+          configSection.style.height = 'auto !important';
+          configSection.style.overflow = 'visible !important';
+          configSection.style.paddingBottom = '100px !important';
           console.log('📱 MOBILE: Config section forced visible');
         }
 
-        // Force render part buttons with additional delay
-        setTimeout(() => {
-          if (typeof renderPartButtons === 'function') {
-            console.log('📱 MOBILE: Calling renderPartButtons');
-            renderPartButtons();
-            console.log('📱 MOBILE: Part buttons rendered');
-
-            // Additional force: ensure part tabs are visible
-            const partTabs = document.getElementById('part-tabs');
-            if (partTabs) {
-              partTabs.style.display = 'block !important';
-              partTabs.style.visibility = 'visible !important';
-              console.log('📱 MOBILE: Part tabs forced visible');
-            }
-
-            // Force show first part tab (Obicie/Stelaż)
-            setTimeout(() => {
-              const firstTab = document.querySelector('#part-tabs .thumbnail');
-              if (firstTab) {
-                console.log('📱 MOBILE: Clicking first part tab');
-                firstTab.click();
-              }
-            }, 200);
-          }
-        }, 200);
-      }, 100);
-
-        // 📱 PHYSICAL MOBILE FIX: Ensure config options appear on physical devices
-        // Add additional force for physical mobile devices
-        const isPhysicalMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-        if (isPhysicalMobile) {
-          console.log('📱 PHYSICAL MOBILE: Detected physical mobile device, applying additional fixes');
-
-          // Force additional CSS for physical mobile devices
-          const physicalMobileStyle = document.createElement('style');
-          physicalMobileStyle.id = 'physical-mobile-fix';
-          physicalMobileStyle.textContent = `
-            @media (max-width: 820px) {
-              /* Force config section visibility on physical mobile */
-              #config-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                position: relative !important;
-                z-index: 1000 !important;
-                height: auto !important;
-                min-height: 100vh !important;
-              }
-
-              /* Force part tabs visibility and proper layout */
-              #part-tabs {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                overflow-x: auto !important;
-                flex-wrap: nowrap !important;
-                gap: 12px !important;
-                padding: 12px !important;
-                background: #fff !important;
-                border-radius: 12px !important;
-                margin-bottom: 20px !important;
-              }
-
-              /* Force material sections visibility */
-              #materials-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                overflow: visible !important;
-              }
-
-              /* Force collection groups visibility and proper scrolling */
-              .collection-accordion-group {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                max-height: 300px !important;
-                overflow-y: auto !important;
-                margin-bottom: 20px !important;
-              }
-
-              /* Force collection sections to be properly visible */
-              .collection-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                margin-bottom: 20px !important;
-              }
-
-              /* Force collection materials row visibility */
-              .collection-materials-row {
-                display: grid !important;
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
-                gap: 12px !important;
-                padding: 12px !important;
-              }
-
-              /* Force thumbnails to be clickable and visible */
-              .thumbnail {
-                pointer-events: auto !important;
-                cursor: pointer !important;
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                width: 80px !important;
-                height: 80px !important;
-                min-width: 80px !important;
-                min-height: 80px !important;
-              }
-
-              /* Force part buttons to be clickable */
-              .simple-part-btn {
-                pointer-events: auto !important;
-                cursor: pointer !important;
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                min-height: 50px !important;
-                font-size: 14px !important;
-                padding: 12px 16px !important;
-              }
-
-              /* Force thumbnail wrapper visibility */
-              .thumbnail-wrapper {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                flex-direction: column !important;
-                align-items: center !important;
-              }
-
-              /* Force thumbnail captions */
-              .thumbnail-caption {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                font-size: 12px !important;
-                text-align: center !important;
-                margin-top: 8px !important;
-                color: #333 !important;
-              }
-
-              /* Force sidebar proper height and scrolling */
-              #sidebar {
-                height: 100vh !important;
-                overflow-y: auto !important;
-                padding-bottom: 150px !important;
-              }
-
-              /* Force model section visibility */
-              #model-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-
-              /* Force legs section visibility */
-              #legs-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-
-              /* Force parts section visibility */
-              #parts-section {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-              }
-            }
-          `;
-
-          // Remove existing style if present
-          const existingStyle = document.getElementById('physical-mobile-fix');
-          if (existingStyle) existingStyle.remove();
-
-          // Add new style
-          document.head.appendChild(physicalMobileStyle);
-
-          // Additional JavaScript force after a longer delay for physical devices
-          setTimeout(() => {
-            console.log('📱 PHYSICAL MOBILE: Applying additional JavaScript fixes');
-
-            // Force config section visibility again
-            const configSection = document.getElementById('config-section');
-            if (configSection) {
-              configSection.style.display = 'block';
-              configSection.style.visibility = 'visible';
-              configSection.style.opacity = '1';
-              configSection.style.position = 'relative';
-              configSection.style.zIndex = '1000';
-              configSection.style.height = 'auto';
-              configSection.style.minHeight = '100vh';
-            }
-
-            // Force part tabs container
-            const partTabs = document.getElementById('part-tabs');
-            if (partTabs) {
-              partTabs.style.display = 'flex';
-              partTabs.style.visibility = 'visible';
-              partTabs.style.opacity = '1';
-              partTabs.style.overflowX = 'auto';
-              partTabs.style.flexWrap = 'nowrap';
-              partTabs.style.gap = '12px';
-              partTabs.style.padding = '12px';
-              partTabs.style.background = '#fff';
-              partTabs.style.borderRadius = '12px';
-              partTabs.style.marginBottom = '20px';
-            }
-
-            // Force materials section
-            const materialsSection = document.getElementById('materials-section');
-            if (materialsSection) {
-              materialsSection.style.display = 'block';
-              materialsSection.style.visibility = 'visible';
-              materialsSection.style.opacity = '1';
-              materialsSection.style.height = 'auto';
-              materialsSection.style.overflow = 'visible';
-            }
-
-            // Force collection groups
-            const collectionGroups = document.querySelectorAll('.collection-accordion-group');
-            collectionGroups.forEach(group => {
-              group.style.display = 'block';
-              group.style.visibility = 'visible';
-              group.style.opacity = '1';
-              group.style.maxHeight = '300px';
-              group.style.overflowY = 'auto';
-              group.style.marginBottom = '20px';
-            });
-
-            // Force collection sections
-            const collectionSections = document.querySelectorAll('.collection-section');
-            collectionSections.forEach(section => {
-              section.style.display = 'block';
-              section.style.visibility = 'visible';
-              section.style.opacity = '1';
-              section.style.marginBottom = '20px';
-            });
-
-            // Force materials rows
-            const materialRows = document.querySelectorAll('.collection-materials-row');
-            materialRows.forEach(row => {
-              row.style.display = 'grid';
-              row.style.gridTemplateColumns = 'repeat(auto-fill, minmax(80px, 1fr))';
-              row.style.gap = '12px';
-              row.style.padding = '12px';
-            });
-
-            // Force thumbnails to be interactive and properly sized
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            thumbnails.forEach(thumb => {
-              thumb.style.pointerEvents = 'auto';
-              thumb.style.cursor = 'pointer';
-              thumb.style.display = 'flex';
-              thumb.style.visibility = 'visible';
-              thumb.style.opacity = '1';
-              thumb.style.width = '80px';
-              thumb.style.height = '80px';
-              thumb.style.minWidth = '80px';
-              thumb.style.minHeight = '80px';
-            });
-
-            // Force part buttons
-            const partButtons = document.querySelectorAll('.simple-part-btn');
-            partButtons.forEach(btn => {
-              btn.style.pointerEvents = 'auto';
-              btn.style.cursor = 'pointer';
-              btn.style.display = 'flex';
-              btn.style.visibility = 'visible';
-              btn.style.opacity = '1';
-              btn.style.minHeight = '50px';
-              btn.style.fontSize = '14px';
-              btn.style.padding = '12px 16px';
-            });
-
-            // Force thumbnail wrappers
-            const thumbWrappers = document.querySelectorAll('.thumbnail-wrapper');
-            thumbWrappers.forEach(wrapper => {
-              wrapper.style.display = 'flex';
-              wrapper.style.visibility = 'visible';
-              wrapper.style.opacity = '1';
-              wrapper.style.flexDirection = 'column';
-              wrapper.style.alignItems = 'center';
-            });
-
-            // Force thumbnail captions
-            const thumbCaptions = document.querySelectorAll('.thumbnail-caption');
-            thumbCaptions.forEach(caption => {
-              caption.style.display = 'block';
-              caption.style.visibility = 'visible';
-              caption.style.opacity = '1';
-              caption.style.fontSize = '12px';
-              caption.style.textAlign = 'center';
-              caption.style.marginTop = '8px';
-              caption.style.color = '#333';
-            });
-
-            // Force sidebar proper scrolling
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-              sidebar.style.height = '100vh';
-              sidebar.style.overflowY = 'auto';
-              sidebar.style.paddingBottom = '150px';
-            }
-
-            // Force other sections visibility
-            const modelSection = document.getElementById('model-section');
-            if (modelSection) {
-              modelSection.style.display = 'block';
-              modelSection.style.visibility = 'visible';
-              modelSection.style.opacity = '1';
-            }
-
-            const legsSection = document.getElementById('legs-section');
-            if (legsSection) {
-              legsSection.style.display = 'block';
-              legsSection.style.visibility = 'visible';
-              legsSection.style.opacity = '1';
-            }
-
-            const partsSection = document.getElementById('parts-section');
-            if (partsSection) {
-              partsSection.style.display = 'block';
-              partsSection.style.visibility = 'visible';
-              partsSection.style.opacity = '1';
-            }
-
-            console.log('📱 PHYSICAL MOBILE: Applied comprehensive fixes for physical mobile devices');
-          }, 500);
+        // Force render part buttons
+        if (typeof renderPartButtons === 'function') {
+          console.log('📱 MOBILE: Rendering part buttons');
+          renderPartButtons();
         }
+
+        // Force show part tabs
+        setTimeout(() => {
+          const partTabs = document.getElementById('part-tabs');
+          if (partTabs) {
+            partTabs.style.display = 'flex !important';
+            partTabs.style.visibility = 'visible !important';
+            partTabs.style.opacity = '1 !important';
+            partTabs.style.flexDirection = 'row !important';
+            partTabs.style.gap = '12px !important';
+            partTabs.style.padding = '16px !important';
+            partTabs.style.background = '#fff !important';
+            partTabs.style.borderRadius = '12px !important';
+            partTabs.style.marginBottom = '20px !important';
+            console.log('📱 MOBILE: Part tabs forced visible and styled');
+          }
+
+          // Auto-click first part tab
+          const firstTab = document.querySelector('#part-tabs .simple-part-btn');
+          if (firstTab) {
+            console.log('📱 MOBILE: Auto-clicking first part tab');
+            firstTab.click();
+          }
+        }, 100);
+      }, 50);
     }
 
   } catch (e) {
