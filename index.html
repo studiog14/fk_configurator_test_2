@@ -1422,8 +1422,8 @@
 @media (max-width: 820px) {
   /* Mobile sidebar - responsive sizing based on screen size */
   #sidebar {
-    width: 300px !important;
-    max-width: 300px !important;
+    width: 280px !important;
+    max-width: 280px !important;
     min-width: 260px !important;
     padding: 16px 12px 80px 12px !important;
     height: 100vh !important;
@@ -1434,9 +1434,10 @@
 
   /* Mobile canvas - adjust for sidebar */
   #canvas-container {
-    width: calc(100% - 300px) !important;
+    width: calc(100% - 280px) !important;
     height: 100vh !important;
-    left: 300px !important;
+    left: 280px !important;
+    position: fixed !important;
   }
 
   #canvas {
@@ -4490,28 +4491,30 @@ body.mobile-mode #standalone-mobile-ui {
     /* Make both buttons smaller and consistent on mobile */
     body.mobile-mode #config-overview-button,
     body.mobile-mode #view-in-room-button {
-      padding: 4px 8px !important;
-      font-size: 10px !important;
-      border-radius: 14px !important;
+      padding: 8px 12px !important;
+      font-size: 12px !important;
+      border-radius: 20px !important;
       box-shadow: 0 2px 8px rgba(245, 200, 66, 0.3) !important;
       display: inline-flex !important;
       align-items: center !important;
-      gap: 4px !important;
+      gap: 6px !important;
       line-height: 1 !important;
-      height: 26px !important;
+      height: 36px !important;
+      min-width: 140px !important;
     }
     @media (max-width: 820px) {
       #config-overview-button,
       #view-in-room-button {
-        padding: 4px 8px !important;
-        font-size: 10px !important;
-        border-radius: 14px !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        border-radius: 20px !important;
         box-shadow: 0 2px 8px rgba(245, 200, 66, 0.3) !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 6px !important;
         line-height: 1 !important;
-        height: 26px !important;
+        height: 36px !important;
+        min-width: 140px !important;
       }
     }
   </style>
