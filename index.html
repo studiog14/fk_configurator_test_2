@@ -114,12 +114,22 @@
       overflow-x: hidden;
       padding-right: 5px; /* Miejsce na suwak */
     }
-    
+
     /* Kontener z przewijaniem tylko dla części z materiałami */
     #sidebar #config-section {
       flex: 1;
       overflow: visible;
       padding-bottom: 20px; /* Mniejszy odstęp na dole dla lepszego scrollowania */
+    }
+
+    /* 📱 Model section should stretch like materials section - JEDEN suwak dla całej sekcji */
+    #sidebar #model-section {
+      flex: 1;
+      overflow: visible; /* Usuwamy overflow-y: auto żeby zapobiec podwójnym suwakom */
+      overflow-x: hidden;
+      padding-right: 8px; /* Miejsce na suwak */
+      max-height: calc(100vh - 300px);
+      min-height: calc(100vh - 350px); /* Zapewnia że sekcja sięga do dołu */
     }
 
     /* 📱 Mobile: chairs section to bottom with small spacing */
@@ -633,28 +643,74 @@
 
     /* ✅ TYLKO DLA GŁÓWNEJ LISTY KRZESEŁ - suwak i większa wysokość */
     #model-section .options-grid {
-      max-height: calc(100vh - 350px); /* ✅ Więcej miejsca na UI (było 200px) */
+      max-height: calc(100vh - 300px); /* ✅ Więcej miejsca na UI */
       overflow-y: auto; /* ✅ Suwak tylko tutaj */
-      padding-right: 5px; /* ✅ Miejsce na suwak */
+      overflow-x: hidden; /* ✅ Zapobiegaj poziomemu scrollowaniu */
+      padding-right: 8px; /* ✅ Miejsce na suwak */
+      padding-bottom: 20px; /* ✅ Miejsce na dole */
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 16px; /* ✅ Lepsze odstępy */
       align-items: flex-start;
+      justify-content: flex-start; /* ✅ Wyrównanie do lewej zamiast centrowania */
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    /* ✅ MOBILE: Tylko główna lista krzeseł - NAPRAWIONO */
-    @media (max-width: 768px) {
+    /* ✅ MOBILE: Chair tiles section - FIXED */
+    @media (max-width: 820px) {
       #model-section .options-grid {
-        max-height: calc(100vh - 400px); /* ✅ Więcej miejsca na mobile UI (było 250px) */
-        gap: 12px; /* Zmniejszony odstęp dla lepszego dopasowania */
-        padding-bottom: 20px; /* Dodatkowy padding na dole */
-        padding-right: 8px; /* Więcej miejsca na suwak */
-        overflow-y: auto; /* Zapewnij scrollowanie */
-        display: flex; /* Zachowaj flex layout */
-        flex-wrap: wrap; /* Pozwól zawijanie */
-        align-items: flex-start; /* Wyrównanie do góry */
-        min-height: 300px; /* Minimalna wysokość dla lepszego scrollowania */
-        width: 100%; /* Zapewnij pełną szerokość */
+        max-height: calc(100vh - 280px); /* More space for mobile UI */
+        gap: 15px; /* Better spacing for chair tiles */
+        padding: 20px 12px 20px 12px; /* Better padding */
+        overflow-y: auto; /* Ensure scrolling */
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        display: flex; /* Keep flex layout */
+        flex-wrap: wrap; /* Allow wrapping */
+        align-items: flex-start; /* Align to top */
+        min-height: calc(100vh - 320px); /* Full height for scrolling */
+        width: 100%; /* Full width */
+        justify-content: flex-start; /* Left align - NOT center */
+        box-sizing: border-box; /* Include padding in width */
+      }
+
+      /* Ensure chair thumbnails are properly sized and visible */
+      #model-section .thumbnail-wrapper {
+        margin-bottom: 20px; /* Space between rows */
+        flex: 0 0 auto; /* Don't shrink */
+        width: calc(50% - 10px); /* Two tiles per row */
+        max-width: 140px; /* Maximum width */
+      }
+
+      #model-section .thumbnail {
+        width: 100% !important;
+        height: 120px !important;
+        min-height: 120px !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #fff !important;
+        border: 1px solid #e0e0e0 !important;
+      }
+
+      #model-section .thumbnail img {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        border-radius: 8px !important;
+        display: block !important;
+        opacity: 1 !important;
+      }
+
+      #model-section .thumbnail-caption {
+        font-size: 13px !important;
+        margin-top: 8px !important;
+        text-align: center !important;
+        max-width: 100% !important;
+        line-height: 1.3 !important;
+        color: #333 !important;
+        font-weight: 500 !important;
       }
     }
 
@@ -1678,8 +1734,10 @@
   .collection-materials-row {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)) !important;
-    gap: 10px !important;
-    padding: 10px !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Mobile thumbnails - responsive functionality */
