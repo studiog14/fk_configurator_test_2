@@ -1,74 +1,53 @@
-# =========================================
-# GIT AUTO PUSH SPLIT (PROJECT / CHAIRS / TEXTURES) - FORCE
-# =========================================
+Add-Type -AssemblyName System.Windows.Forms
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Git Auto Push"
+$form.Size = New-Object System.Drawing.Size(600,400)
 
-Write-Host "Starting Git Auto Push..." -ForegroundColor Cyan
-Write-Host "========================================="
+# Repo ComboBox
+$combo = New-Object System.Windows.Forms.ComboBox
+$combo.Location = '20,20'; $combo.Size = '400,20'
+$form.Controls.Add($combo)
 
-# --- Konfiguracja ---
-$RepoURL = Read-Host "Enter repository URL or leave empty to use default"
-if (-not $RepoURL) { $RepoURL = "https://github.com/studiog14/cofigurator_test.git" }
-$Branch = "main"
-$LargeFileLimitMB = 100
-$LargeFileLimitBytes = $LargeFileLimitMB * 1MB
+# CheckBoxes
+$chkCore = New-Object System.Windows.Forms.CheckBox
+$chkCore.Text = "Core Files"; $chkCore.Location = '20,60'; $form.Controls.Add($chkCore)
+$chkChairs = New-Object System.Windows.Forms.CheckBox
+$chkChairs.Text = "Chairs"; $chkChairs.Location = '150,60'; $form.Controls.Add($chkChairs)
+$chkTextures = New-Object System.Windows.Forms.CheckBox
+$chkTextures.Text = "Textures"; $chkTextures.Location = '280,60'; $form.Controls.Add($chkTextures)
 
-# --- Funkcja push z retry ---
-function Push-WithRetry {
-    param(
-        [string]$FolderName,
-        [string]$CommitMsg
-    )
-    $Attempt = 1
-    do {
-        Write-Host "[$FolderName] Pushing: $CommitMsg (Attempt #$Attempt)"
-        try {
-            git add $FolderName/* 2>$null
-            git commit -m "$CommitMsg" 2>$null
-            git push origin $Branch --force
-            return $true
-        } catch {
-            Write-Host "Push failed, retrying in 5s..."
-            Start-Sleep -Seconds 5
-            $Attempt++
-        }
-    } while ($Attempt -le 5)
-    Write-Host "[ERROR] Push for $FolderName failed after 5 attempts"
-    return $false
+# Log TextBox
+$log = New-Object System.Windows.Forms.TextBox
+$log.Location = '20,100'; $log.Size = '540,240'; $log.Multiline = $true; $log.ScrollBars = 'Vertical'
+$form.Controls.Add($log)
+
+# Push Button
+$btn = New-Object System.Windows.Forms.Button
+$btn.Text = "Push"; $btn.Location = '20,350'; $btn.Size = '100,30'
+$form.Controls.Add($btn)
+
+# Funkcja pobierająca repo
+function Get-Repos {
+    $token = $env:GITHUB_TOKEN
+    $headers = @{ Authorization = "token $token" }
+    $repos = Invoke-RestMethod -Uri "https://api.github.com/user/repos?per_page=100" -Headers $headers
+    $combo.Items.Clear()
+    foreach ($r in $repos) { $combo.Items.Add($r.name) }
+    $combo.Items.Add("Create new repository")
 }
 
-# --- Sprawdzanie dużych plików ---
-Write-Host "[INFO] Checking for files above $LargeFileLimitMB MB..."
-$Files = git ls-files
-foreach ($file in $Files) {
-    $fileTrim = $file.Trim()
-    if ($fileTrim) {
-        try {
-            if (Test-Path -LiteralPath $fileTrim) {
-                $size = (Get-Item -LiteralPath $fileTrim).length
-                if ($size -gt $LargeFileLimitBytes) {
-                    Write-Host "[WARNING] Large file detected: $fileTrim ($([math]::Round($size/1MB,2)) MB)" -ForegroundColor Yellow
-                }
-            }
-        } catch {
-            Write-Host "[WARNING] Skipping file with invalid path: $fileTrim" -ForegroundColor Yellow
-        }
-    }
-}
+# Funkcja push
+$btn.Add_Click({
+    $repo = $combo.SelectedItem
+    if (-not $repo) { [System.Windows.Forms.MessageBox]::Show("Select a repository!") ; return }
+    $pushCore = $chkCore.Checked
+    $pushChairs = $chkChairs.Checked
+    $pushTextures = $chkTextures.Checked
+    # tutaj logika pushowania z --force
+    $log.AppendText("Pushing to $repo ...`r`n")
+})
 
-# --- Kolejne kroki push ---
-$Steps = @(
-    @{ Name="Project Core"; Path="."; Msg="Push Project Core files" },
-    @{ Name="Chairs"; Path="chairs"; Msg="Push Chairs files" },
-    @{ Name="Textures"; Path="textures"; Msg="Push Textures files" }
-)
+# Wczytaj repo przy starcie
+Get-Repos
 
-foreach ($step in $Steps) {
-    Write-Host "-------------------------------------"
-    Write-Host "[STEP] Pushing $($step.Name)..."
-    Push-WithRetry -FolderName $step.Path -CommitMsg $step.Msg
-}
-
-Write-Host "========================================="
-Write-Host "Git Auto Push finished."
-Write-Host "Press any key to exit..."
-$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+[void]$form.ShowDialog()
