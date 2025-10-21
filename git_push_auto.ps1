@@ -29,17 +29,15 @@ $txtRepo.Add_Leave({
 })
 
 # CheckBoxes
-$chkCore = New-Object System.Windows.Forms.CheckBox
-$chkCore.Text = "Core Files"; $chkCore.Location = '20,60'; $chkCore.ForeColor = [System.Drawing.Color]::White; $chkCore.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
-$form.Controls.Add($chkCore)
+$chkPushMain = New-Object System.Windows.Forms.CheckBox
+$chkPushMain.Text = "Push local changes to main"; $chkPushMain.Location = '20,60'; $chkPushMain.ForeColor = [System.Drawing.Color]::White; $chkPushMain.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
+$chkPushMain.Checked = $true
+$form.Controls.Add($chkPushMain)
 
-$chkChairs = New-Object System.Windows.Forms.CheckBox
-$chkChairs.Text = "Chairs"; $chkChairs.Location = '150,60'; $chkChairs.ForeColor = [System.Drawing.Color]::White; $chkChairs.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
-$form.Controls.Add($chkChairs)
-
-$chkTextures = New-Object System.Windows.Forms.CheckBox
-$chkTextures.Text = "Textures"; $chkTextures.Location = '280,60'; $chkTextures.ForeColor = [System.Drawing.Color]::White; $chkTextures.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
-$form.Controls.Add($chkTextures)
+$chkPushPages = New-Object System.Windows.Forms.CheckBox
+$chkPushPages.Text = "Push static files to gh-pages"; $chkPushPages.Location = '250,60'; $chkPushPages.ForeColor = [System.Drawing.Color]::White; $chkPushPages.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
+$chkPushPages.Checked = $true
+$form.Controls.Add($chkPushPages)
 
 # Log TextBox
 $log = New-Object System.Windows.Forms.TextBox
@@ -62,18 +60,10 @@ $btn.Add_Click({
         [System.Windows.Forms.MessageBox]::Show("Paste repository URL!"); return 
     }
 
-    $pushCore = $chkCore.Checked
-    $pushChairs = $chkChairs.Checked
-    $pushTextures = $chkTextures.Checked
-
-    if (-not ($pushCore -or $pushChairs -or $pushTextures)) {
-        [System.Windows.Forms.MessageBox]::Show("Select at least one type to push!"); return 
-    }
-
-    $log.AppendText("Starting push to $repoUrl ...`r`n")
+    $log.AppendText("Starting Git Auto Push...`r`n")
 
     try {
-        # Max buffer Git
+        # Zwiększenie buforów Git
         git config --global http.postBuffer 1572864000
         git config --global http.maxRequestBuffer 1572864000
         $log.AppendText("Git buffer set to ~1.5GB`r`n")
@@ -82,61 +72,47 @@ $btn.Add_Click({
         $log.AppendText("Current branch: $currentBranch`r`n")
 
         # ==========================
-        # 1️⃣ Push plików głównych (Core)
-        if ($pushCore) {
-            $coreFiles = Get-ChildItem -File
-            if ($coreFiles.Count -gt 0) {
-                git add .  # dodaj wszystkie nowe pliki w głównym katalogu
-                git commit -m "Auto commit core files" -q
+        # 1️⃣ Push lokalnych zmian do main
+        if ($chkPushMain.Checked) {
+            # git add -A doda wszystkie nowe, zmienione i usunięte pliki
+            git add -A
+            $status = git status --porcelain
+            if (-not [string]::IsNullOrWhiteSpace($status)) {
+                git commit -m "Auto commit changes" -q
                 git push $repoUrl $currentBranch --force
-                $log.AppendText("Pushed Core Files (main folder)`r`n")
+                $log.AppendText("Local changes pushed to $currentBranch`r`n")
             } else {
-                $log.AppendText("No core files found, skipping.`r`n")
+                $log.AppendText("No changes detected in local repo.`r`n")
             }
         }
 
         # ==========================
-        # 2️⃣ Push folderów (Chairs, Textures)
-        $folders = @()
-        if ($pushChairs) { $folders += "chairs" }
-        if ($pushTextures) { $folders += "textures" }
+        # 2️⃣ Push statycznych plików do gh-pages
+        if ($chkPushPages.Checked) {
+            $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
+            if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+            New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-        foreach ($f in $folders) {
-            if (Test-Path $f) {
-                git add $f -A
-                git commit -m "Auto commit $f" -q
-                git push $repoUrl $currentBranch --force
-                $log.AppendText("Pushed folder $f (all new files)`r`n")
-            } else {
-                $log.AppendText("Folder $f not found, skipping.`r`n")
+            # Kopiowanie wszystkich plików html/css/js z głównego katalogu
+            $staticFiles = Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" }
+            foreach ($f in $staticFiles) {
+                Copy-Item $f.FullName -Destination $tempDir
+                $log.AppendText("Copied $($f.Name) to temp folder.`r`n")
             }
+
+            Push-Location $tempDir
+            git init
+            git remote add origin $repoUrl
+            git checkout -b gh-pages
+            git add -A
+            git commit -m "Deploy static site" -q
+            git push origin gh-pages --force
+            Pop-Location
+            Remove-Item $tempDir -Recurse -Force
+            $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
         }
 
-        # ==========================
-        # 3️⃣ Push statycznych plików do gh-pages
-        $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
-        if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
-        New-Item -ItemType Directory -Path $tempDir | Out-Null
-
-        # automatycznie wykryj wszystkie statyczne pliki html/css/js w katalogu
-        $staticFiles = Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" }
-        foreach ($f in $staticFiles) {
-            Copy-Item $f.FullName -Destination $tempDir
-            $log.AppendText("Copied $($f.Name) to temp folder.`r`n")
-        }
-
-        Push-Location $tempDir
-        git init
-        git remote add origin $repoUrl
-        git checkout -b gh-pages
-        git add . -A
-        git commit -m "Deploy static site" -q
-        git push origin gh-pages --force
-        Pop-Location
-        Remove-Item $tempDir -Recurse -Force
-        $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
-
-        $log.AppendText("All selected parts pushed successfully!`r`n")
+        $log.AppendText("Git Auto Push completed successfully!`r`n")
 
     } catch {
         $log.AppendText("Error: $_`r`n")
