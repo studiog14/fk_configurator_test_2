@@ -6,7 +6,7 @@ $form.Text = "Git Auto Push"
 $form.Size = New-Object System.Drawing.Size(600,400)
 $form.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
 
-# Repo TextBox (wklejasz link do repo)
+# Repo TextBox
 $txtRepo = New-Object System.Windows.Forms.TextBox
 $txtRepo.Location = '20,20'; $txtRepo.Size = '540,20'
 $txtRepo.BackColor = [System.Drawing.Color]::FromArgb(28,28,28)
@@ -66,51 +66,51 @@ $btn.Add_Click({
     $pushChairs = $chkChairs.Checked
     $pushTextures = $chkTextures.Checked
 
-    $folders = @()
-    if ($pushCore) { $folders += "core" }
-    if ($pushChairs) { $folders += "chairs" }
-    if ($pushTextures) { $folders += "textures" }
+    $parts = @()
+    if ($pushCore) { $parts += "core" }
+    if ($pushChairs) { $parts += "chairs" }
+    if ($pushTextures) { $parts += "textures" }
 
-    if ($folders.Count -eq 0) { 
+    if ($parts.Count -eq 0) { 
         [System.Windows.Forms.MessageBox]::Show("Select at least one type to push!"); return 
     }
 
     $log.AppendText("Starting push to $repoUrl ...`r`n")
 
     try {
-        # Sprawdź bieżący branch
+        # Ustawienia bufora Git na max (~1.5 GB)
+        git config --global http.postBuffer 1572864000
+        git config --global http.maxRequestBuffer 1572864000
+        $log.AppendText("Git buffer set to ~1.5GB`r`n")
+
+        # Sprawdź aktualny branch
         $currentBranch = git rev-parse --abbrev-ref HEAD
         $log.AppendText("Current branch: $currentBranch`r`n")
 
-        # Dodaj pliki i foldery
-        foreach ($f in $folders) {
-            if ($f -eq "core") {
-                # Dodaj wszystkie pliki w głównym katalogu (bez folderów)
+        foreach ($p in $parts) {
+            if ($p -eq "core") {
                 $coreFiles = Get-ChildItem -File
                 if ($coreFiles.Count -gt 0) {
                     git add $coreFiles.Name
-                    $log.AppendText("Added core files: $($coreFiles.Name -join ', ')`r`n")
+                    git commit -m "Auto commit core files" -q
+                    git push $repoUrl $currentBranch --force
+                    $log.AppendText("Pushed Core Files: $($coreFiles.Name -join ', ')`r`n")
                 } else {
-                    $log.AppendText("No core files found.`r`n")
+                    $log.AppendText("No core files found, skipping.`r`n")
                 }
             } else {
-                # Dodaj foldery chairs i textures
-                if (Test-Path $f) {
-                    git add $f
-                    $log.AppendText("Added folder $f`r`n")
+                if (Test-Path $p) {
+                    git add $p
+                    git commit -m "Auto commit $p" -q
+                    git push $repoUrl $currentBranch --force
+                    $log.AppendText("Pushed folder $p`r`n")
                 } else {
-                    $log.AppendText("Folder $f not found, skipping.`r`n")
+                    $log.AppendText("Folder $p not found, skipping.`r`n")
                 }
             }
         }
 
-        # Commit
-        git commit -m "Auto commit" -q
-        $log.AppendText("Committed changes.`r`n")
-
-        # Push
-        git push $repoUrl $currentBranch --force
-        $log.AppendText("Pushed successfully!`r`n")
+        $log.AppendText("All selected parts pushed successfully!`r`n")
     } catch {
         $log.AppendText("Error: $_`r`n")
     }
