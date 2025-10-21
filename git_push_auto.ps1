@@ -1,99 +1,71 @@
 # =========================================
-# GIT AUTO PUSH SPLIT + GITHUB REPO SELECT
+# GIT AUTO PUSH SPLIT (PROJECT / CHAIRS / TEXTURES) - FORCE
 # =========================================
 
-# --- CONFIG ---
-$GitHubToken = "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"
-$GitHubUser = "TWOJ_LOGIN_GITHUB"  # Twój login GitHub
-$MaxFileSizeMB = 100
-$MaxFileSizeBytes = $MaxFileSizeMB * 1MB
+Write-Host "Starting Git Auto Push..." -ForegroundColor Cyan
+Write-Host "========================================="
 
-$FoldersToPush = @(
-    @{Name="Project Core"; Path="."},
-    @{Name="Chairs"; Path="chairs"},
-    @{Name="Textures"; Path="textures"}
-)
+# --- Konfiguracja ---
+$RepoURL = Read-Host "Enter repository URL or leave empty to use default"
+if (-not $RepoURL) { $RepoURL = "https://github.com/studiog14/cofigurator_test.git" }
+$Branch = "main"
+$LargeFileLimitMB = 100
+$LargeFileLimitBytes = $LargeFileLimitMB * 1MB
 
-# --- FUNCTIONS ---
-function Get-GitHubRepos {
-    Write-Host "[INFO] Fetching repositories from GitHub..."
-    $headers = @{ Authorization = "token $GitHubToken" }
-    $repos = Invoke-RestMethod -Uri "https://api.github.com/user/repos?per_page=100" -Headers $headers
-    return $repos | Select-Object -Property name, ssh_url, clone_url
-}
-
-function Choose-Repo {
-    $repos = Get-GitHubRepos
-    Write-Host "`nSelect repository to push:"
-    for ($i=0; $i -lt $repos.Count; $i++) {
-        Write-Host "$($i+1)) $($repos[$i].name)"
-    }
-    Write-Host "$($repos.Count+1)) Create new repository"
-
-    $choice = Read-Host "Enter number"
-    if ($choice -eq ($repos.Count+1)) {
-        $newName = Read-Host "Enter new repository name"
-        $repo = Invoke-RestMethod -Uri "https://api.github.com/user/repos" -Headers @{ Authorization = "token $GitHubToken" } -Method POST -Body (@{name=$newName} | ConvertTo-Json)
-        Write-Host "[INFO] Created new repository $newName"
-        return $repo.clone_url
-    } else {
-        return $repos[$choice-1].clone_url
-    }
-}
-
-function Push-WithRetry($Folder, $Msg) {
+# --- Funkcja push z retry ---
+function Push-WithRetry {
+    param(
+        [string]$FolderName,
+        [string]$CommitMsg
+    )
     $Attempt = 1
     do {
+        Write-Host "[$FolderName] Pushing: $CommitMsg (Attempt #$Attempt)"
         try {
-            Write-Host "[INFO] [$Folder] Pushing: $Msg (Attempt #$Attempt)"
-            git add $Folder
-            git commit -m "$Msg"
-            git push origin main
+            git add $FolderName/* 2>$null
+            git commit -m "$CommitMsg" 2>$null
+            git push origin $Branch --force
             return $true
         } catch {
-            Write-Host "[WARN] Push failed, retrying..."
+            Write-Host "Push failed, retrying in 5s..."
             Start-Sleep -Seconds 5
             $Attempt++
         }
     } while ($Attempt -le 5)
-    Write-Host "[ERROR] Failed to push $Folder after 5 attempts."
+    Write-Host "[ERROR] Push for $FolderName failed after 5 attempts"
     return $false
 }
 
-function Check-LargeFiles {
-    Write-Host "[INFO] Checking for files above $MaxFileSizeMB MB..."
-    foreach ($Folder in $FoldersToPush) {
-        Get-ChildItem -Path $Folder.Path -Recurse -File | ForEach-Object {
-            try {
-                if ($_.Length -ge $MaxFileSizeBytes) {
-                    Write-Host "[WARNING] Large file: $($_.FullName) - $([math]::Round($_.Length/1MB,2)) MB"
+# --- Sprawdzanie dużych plików ---
+Write-Host "[INFO] Checking for files above $LargeFileLimitMB MB..."
+$Files = git ls-files
+foreach ($file in $Files) {
+    $fileTrim = $file.Trim()
+    if ($fileTrim) {
+        try {
+            if (Test-Path -LiteralPath $fileTrim) {
+                $size = (Get-Item -LiteralPath $fileTrim).length
+                if ($size -gt $LargeFileLimitBytes) {
+                    Write-Host "[WARNING] Large file detected: $fileTrim ($([math]::Round($size/1MB,2)) MB)" -ForegroundColor Yellow
                 }
-            } catch { }
+            }
+        } catch {
+            Write-Host "[WARNING] Skipping file with invalid path: $fileTrim" -ForegroundColor Yellow
         }
     }
 }
 
-# --- SCRIPT START ---
-Write-Host "========================================="
-Write-Host " GIT AUTO PUSH SPLIT (PROJECT / CHAIRS / TEXTURES)"
-Write-Host "========================================="
+# --- Kolejne kroki push ---
+$Steps = @(
+    @{ Name="Project Core"; Path="."; Msg="Push Project Core files" },
+    @{ Name="Chairs"; Path="chairs"; Msg="Push Chairs files" },
+    @{ Name="Textures"; Path="textures"; Msg="Push Textures files" }
+)
 
-# 1. Wybór repo
-$RepoURL = Choose-Repo
-Write-Host "[INFO] Using repository: $RepoURL"
-
-# 2. Sprawdzenie dużych plików
-Check-LargeFiles
-
-# 3. Dodawanie remote (jeśli nie istnieje)
-if (-not (git remote | Select-String origin)) {
-    git remote add origin $RepoURL
-}
-
-# 4. Push folderów
-foreach ($Folder in $FoldersToPush) {
-    Write-Host "[STEP] Pushing $($Folder.Name)..."
-    Push-WithRetry $Folder.Path "Push $($Folder.Name) files"
+foreach ($step in $Steps) {
+    Write-Host "-------------------------------------"
+    Write-Host "[STEP] Pushing $($step.Name)..."
+    Push-WithRetry -FolderName $step.Path -CommitMsg $step.Msg
 }
 
 Write-Host "========================================="
