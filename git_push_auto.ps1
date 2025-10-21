@@ -14,7 +14,6 @@ $txtRepo.ForeColor = [System.Drawing.Color]::Gray
 $txtRepo.Text = "Paste GitHub repository URL here"
 $form.Controls.Add($txtRepo)
 
-# Placeholder logic
 $txtRepo.Add_Enter({
     if ($txtRepo.Text -eq "Paste GitHub repository URL here") {
         $txtRepo.Text = ""
@@ -63,7 +62,6 @@ $btn.Add_Click({
     $log.AppendText("Starting Git Auto Push...`r`n")
 
     try {
-        # Git buffer
         git config --global http.postBuffer 1572864000
         git config --global http.maxRequestBuffer 1572864000
         $log.AppendText("Git buffer set to ~1.5GB`r`n")
@@ -72,7 +70,7 @@ $btn.Add_Click({
         $log.AppendText("Current branch: $currentBranch`r`n")
 
         # ==========================
-        # 1️⃣ Push lokalnych zmian do main
+        # Push do main
         if ($chkPushMain.Checked) {
             git add -A
             $status = git status --porcelain
@@ -86,51 +84,21 @@ $btn.Add_Click({
         }
 
         # ==========================
-        # 2️⃣ Push wszystkich plików statycznych + folderów do gh-pages
+        # Push do gh-pages
         if ($chkPushPages.Checked) {
             $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
             if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
             New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-            # Kopiujemy wszystkie pliki .html, .css, .js
-            Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" } | ForEach-Object {
-                Copy-Item $_.FullName -Destination $tempDir
-                $log.AppendText("Copied $($_.Name) to temp folder.`r`n")
+            # Kopiujemy wszystkie pliki i foldery projektu
+            Get-ChildItem -Recurse | ForEach-Object {
+                $dest = Join-Path $tempDir $_.FullName.Substring($PWD.Path.Length+1)
+                if ($_.PSIsContainer) { New-Item -ItemType Directory -Path $dest -Force | Out-Null } else { Copy-Item $_.FullName -Destination $dest -Force }
             }
 
-            # Kopiujemy wszystkie foldery w katalogu projektu (np. chairs, textures)
-            Get-ChildItem -Directory | ForEach-Object {
-                Copy-Item $_.FullName -Destination $tempDir -Recurse
-                $log.AppendText("Copied folder $($_.Name) to temp folder.`r`n")
-            }
-
-            # Tworzymy folder workflow i plik deploy-pages.yml
-            $workflowDir = Join-Path $tempDir ".github\workflows"
-            if (-not (Test-Path $workflowDir)) { New-Item -ItemType Directory -Path $workflowDir -Force | Out-Null }
-            $workflowFile = Join-Path $workflowDir "deploy-pages.yml"
-
-            $workflowContent = @'
-name: GitHub Pages
-
-on:
-  push:
-    branches:
-      - gh-pages
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-'@
-
-            Set-Content -Path $workflowFile -Value $workflowContent -Force
-            $log.AppendText("Workflow deploy-pages.yml created/updated.`r`n")
+            # Tworzymy .nojekyll
+            New-Item -Path (Join-Path $tempDir ".nojekyll") -ItemType File -Force | Out-Null
+            $log.AppendText(".nojekyll created.`r`n")
 
             Push-Location $tempDir
             git init
@@ -139,7 +107,7 @@ jobs:
             git add -A
             $statusPages = git status --porcelain
             if (-not [string]::IsNullOrWhiteSpace($statusPages)) {
-                git commit -m "Deploy static site with workflow" -q
+                git commit -m "Deploy static site" -q
                 git push origin gh-pages --force
                 $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
             } else {
