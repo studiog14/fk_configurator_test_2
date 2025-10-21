@@ -86,25 +86,29 @@ $btn.Add_Click({
         }
 
         # ==========================
-        # 2️⃣ Push statycznych plików do gh-pages
+        # 2️⃣ Push wszystkich plików statycznych + folderów do gh-pages
         if ($chkPushPages.Checked) {
             $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
             if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
             New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-            # Kopiowanie wszystkich plików html/css/js z głównego katalogu
-            $staticFiles = Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" }
-            foreach ($f in $staticFiles) {
-                Copy-Item $f.FullName -Destination $tempDir
-                $log.AppendText("Copied $($f.Name) to temp folder.`r`n")
+            # Kopiujemy wszystkie pliki .html, .css, .js
+            Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" } | ForEach-Object {
+                Copy-Item $_.FullName -Destination $tempDir
+                $log.AppendText("Copied $($_.Name) to temp folder.`r`n")
             }
 
-            # Tworzymy folder .github/workflows i deploy-pages.yml jeśli nie istnieje
+            # Kopiujemy wszystkie foldery w katalogu projektu (np. chairs, textures)
+            Get-ChildItem -Directory | ForEach-Object {
+                Copy-Item $_.FullName -Destination $tempDir -Recurse
+                $log.AppendText("Copied folder $($_.Name) to temp folder.`r`n")
+            }
+
+            # Tworzymy folder workflow i plik deploy-pages.yml
             $workflowDir = Join-Path $tempDir ".github\workflows"
             if (-not (Test-Path $workflowDir)) { New-Item -ItemType Directory -Path $workflowDir -Force | Out-Null }
             $workflowFile = Join-Path $workflowDir "deploy-pages.yml"
 
-            # Używamy single-quoted here-string, aby nie było problemu z ${{ secrets.GITHUB_TOKEN }}
             $workflowContent = @'
 name: GitHub Pages
 
@@ -133,11 +137,16 @@ jobs:
             git remote add origin $repoUrl
             git checkout -b gh-pages
             git add -A
-            git commit -m "Deploy static site with workflow" -q
-            git push origin gh-pages --force
+            $statusPages = git status --porcelain
+            if (-not [string]::IsNullOrWhiteSpace($statusPages)) {
+                git commit -m "Deploy static site with workflow" -q
+                git push origin gh-pages --force
+                $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
+            } else {
+                $log.AppendText("No changes detected in static files.`r`n")
+            }
             Pop-Location
             Remove-Item $tempDir -Recurse -Force
-            $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
         }
 
         $log.AppendText("Git Auto Push completed successfully!`r`n")
