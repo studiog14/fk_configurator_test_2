@@ -2,8 +2,8 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Git Auto Push"
-$form.Size = New-Object System.Drawing.Size(600,400)
+$form.Text = "Git Auto Push + Pages"
+$form.Size = New-Object System.Drawing.Size(600,450)
 $form.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
 
 # Repo TextBox
@@ -43,14 +43,14 @@ $form.Controls.Add($chkTextures)
 
 # Log TextBox
 $log = New-Object System.Windows.Forms.TextBox
-$log.Location = '20,100'; $log.Size = '540,240'; $log.Multiline = $true; $log.ScrollBars = 'Vertical'
+$log.Location = '20,100'; $log.Size = '540,300'; $log.Multiline = $true; $log.ScrollBars = 'Vertical'
 $log.BackColor = [System.Drawing.Color]::FromArgb(30,30,30)
 $log.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($log)
 
 # Push Button
 $btn = New-Object System.Windows.Forms.Button
-$btn.Text = "Push"; $btn.Location = '20,350'; $btn.Size = '100,30'
+$btn.Text = "Push"; $btn.Location = '20,410'; $btn.Size = '100,30'
 $btn.BackColor = [System.Drawing.Color]::FromArgb(70,70,70)
 $btn.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($btn)
@@ -87,6 +87,8 @@ $btn.Add_Click({
         $currentBranch = git rev-parse --abbrev-ref HEAD
         $log.AppendText("Current branch: $currentBranch`r`n")
 
+        # ==========================
+        # 1️⃣ Push części repo (Core, Chairs, Textures)
         foreach ($p in $parts) {
             if ($p -eq "core") {
                 $coreFiles = Get-ChildItem -File
@@ -110,7 +112,35 @@ $btn.Add_Click({
             }
         }
 
+        # ==========================
+        # 2️⃣ Push statycznych plików do gh-pages
+        $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
+        if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
+        New-Item -ItemType Directory -Path $tempDir | Out-Null
+
+        # Skopiuj statyczne pliki do temp
+        $staticFiles = @("index.html", "style.css", "script.js")  # <- dopasuj do Twojej strony
+        foreach ($f in $staticFiles) {
+            if (Test-Path $f) {
+                Copy-Item $f -Destination $tempDir
+                $log.AppendText("Copied $f to temp folder.`r`n")
+            }
+        }
+
+        # Wypchnij temp do gh-pages
+        Push-Location $tempDir
+        git init
+        git remote add origin $repoUrl
+        git checkout -b gh-pages
+        git add .
+        git commit -m "Deploy static site" -q
+        git push origin gh-pages --force
+        Pop-Location
+        Remove-Item $tempDir -Recurse -Force
+        $log.AppendText("Static site pushed to gh-pages successfully!`r`n")
+
         $log.AppendText("All selected parts pushed successfully!`r`n")
+
     } catch {
         $log.AppendText("Error: $_`r`n")
     }
