@@ -66,73 +66,70 @@ $btn.Add_Click({
     $pushChairs = $chkChairs.Checked
     $pushTextures = $chkTextures.Checked
 
-    $parts = @()
-    if ($pushCore) { $parts += "core" }
-    if ($pushChairs) { $parts += "chairs" }
-    if ($pushTextures) { $parts += "textures" }
-
-    if ($parts.Count -eq 0) { 
+    if (-not ($pushCore -or $pushChairs -or $pushTextures)) {
         [System.Windows.Forms.MessageBox]::Show("Select at least one type to push!"); return 
     }
 
     $log.AppendText("Starting push to $repoUrl ...`r`n")
 
     try {
-        # Ustawienia bufora Git na max (~1.5 GB)
+        # Max buffer Git
         git config --global http.postBuffer 1572864000
         git config --global http.maxRequestBuffer 1572864000
         $log.AppendText("Git buffer set to ~1.5GB`r`n")
 
-        # Sprawdź aktualny branch
         $currentBranch = git rev-parse --abbrev-ref HEAD
         $log.AppendText("Current branch: $currentBranch`r`n")
 
         # ==========================
-        # 1️⃣ Push części repo (Core, Chairs, Textures)
-        foreach ($p in $parts) {
-            if ($p -eq "core") {
-                $coreFiles = Get-ChildItem -File
-                if ($coreFiles.Count -gt 0) {
-                    git add $coreFiles.Name
-                    git commit -m "Auto commit core files" -q
-                    git push $repoUrl $currentBranch --force
-                    $log.AppendText("Pushed Core Files: $($coreFiles.Name -join ', ')`r`n")
-                } else {
-                    $log.AppendText("No core files found, skipping.`r`n")
-                }
+        # 1️⃣ Push plików głównych (Core)
+        if ($pushCore) {
+            $coreFiles = Get-ChildItem -File
+            if ($coreFiles.Count -gt 0) {
+                git add .  # dodaj wszystkie nowe pliki w głównym katalogu
+                git commit -m "Auto commit core files" -q
+                git push $repoUrl $currentBranch --force
+                $log.AppendText("Pushed Core Files (main folder)`r`n")
             } else {
-                if (Test-Path $p) {
-                    git add $p
-                    git commit -m "Auto commit $p" -q
-                    git push $repoUrl $currentBranch --force
-                    $log.AppendText("Pushed folder $p`r`n")
-                } else {
-                    $log.AppendText("Folder $p not found, skipping.`r`n")
-                }
+                $log.AppendText("No core files found, skipping.`r`n")
             }
         }
 
         # ==========================
-        # 2️⃣ Push statycznych plików do gh-pages
+        # 2️⃣ Push folderów (Chairs, Textures)
+        $folders = @()
+        if ($pushChairs) { $folders += "chairs" }
+        if ($pushTextures) { $folders += "textures" }
+
+        foreach ($f in $folders) {
+            if (Test-Path $f) {
+                git add $f -A
+                git commit -m "Auto commit $f" -q
+                git push $repoUrl $currentBranch --force
+                $log.AppendText("Pushed folder $f (all new files)`r`n")
+            } else {
+                $log.AppendText("Folder $f not found, skipping.`r`n")
+            }
+        }
+
+        # ==========================
+        # 3️⃣ Push statycznych plików do gh-pages
         $tempDir = Join-Path -Path $env:TEMP -ChildPath "gh-pages-temp"
         if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
         New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-        # Skopiuj statyczne pliki do temp
-        $staticFiles = @("index.html", "style.css", "script.js")  # <- dopasuj do Twojej strony
+        # automatycznie wykryj wszystkie statyczne pliki html/css/js w katalogu
+        $staticFiles = Get-ChildItem -File | Where-Object { $_.Extension -match "(\.html|\.css|\.js)$" }
         foreach ($f in $staticFiles) {
-            if (Test-Path $f) {
-                Copy-Item $f -Destination $tempDir
-                $log.AppendText("Copied $f to temp folder.`r`n")
-            }
+            Copy-Item $f.FullName -Destination $tempDir
+            $log.AppendText("Copied $($f.Name) to temp folder.`r`n")
         }
 
-        # Wypchnij temp do gh-pages
         Push-Location $tempDir
         git init
         git remote add origin $repoUrl
         git checkout -b gh-pages
-        git add .
+        git add . -A
         git commit -m "Deploy static site" -q
         git push origin gh-pages --force
         Pop-Location
