@@ -3,7 +3,7 @@ Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Git Auto Push + Pages"
-$form.Size = New-Object System.Drawing.Size(600,450)
+$form.Size = New-Object System.Drawing.Size(600,480)
 $form.BackColor = [System.Drawing.Color]::FromArgb(45,45,48)
 
 # Repo TextBox
@@ -41,14 +41,14 @@ $form.Controls.Add($chkPushPages)
 
 # Log TextBox
 $log = New-Object System.Windows.Forms.TextBox
-$log.Location = '20,100'; $log.Size = '540,300'; $log.Multiline = $true; $log.ScrollBars = 'Vertical'
+$log.Location = '20,100'; $log.Size = '540,330'; $log.Multiline = $true; $log.ScrollBars = 'Vertical'
 $log.BackColor = [System.Drawing.Color]::FromArgb(30,30,30)
 $log.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($log)
 
 # Push Button
 $btn = New-Object System.Windows.Forms.Button
-$btn.Text = "Push"; $btn.Location = '20,410'; $btn.Size = '100,30'
+$btn.Text = "Push"; $btn.Location = '20,440'; $btn.Size = '100,30'
 $btn.BackColor = [System.Drawing.Color]::FromArgb(70,70,70)
 $btn.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($btn)
@@ -63,7 +63,7 @@ $btn.Add_Click({
     $log.AppendText("Starting Git Auto Push...`r`n")
 
     try {
-        # Zwiększenie buforów Git
+        # Git buffer
         git config --global http.postBuffer 1572864000
         git config --global http.maxRequestBuffer 1572864000
         $log.AppendText("Git buffer set to ~1.5GB`r`n")
@@ -74,7 +74,6 @@ $btn.Add_Click({
         # ==========================
         # 1️⃣ Push lokalnych zmian do main
         if ($chkPushMain.Checked) {
-            # git add -A doda wszystkie nowe, zmienione i usunięte pliki
             git add -A
             $status = git status --porcelain
             if (-not [string]::IsNullOrWhiteSpace($status)) {
@@ -100,12 +99,41 @@ $btn.Add_Click({
                 $log.AppendText("Copied $($f.Name) to temp folder.`r`n")
             }
 
+            # Tworzymy folder .github/workflows i deploy-pages.yml jeśli nie istnieje
+            $workflowDir = Join-Path $tempDir ".github\workflows"
+            if (-not (Test-Path $workflowDir)) { New-Item -ItemType Directory -Path $workflowDir -Force | Out-Null }
+            $workflowFile = Join-Path $workflowDir "deploy-pages.yml"
+
+            # Używamy single-quoted here-string, aby nie było problemu z ${{ secrets.GITHUB_TOKEN }}
+            $workflowContent = @'
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - gh-pages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+'@
+
+            Set-Content -Path $workflowFile -Value $workflowContent -Force
+            $log.AppendText("Workflow deploy-pages.yml created/updated.`r`n")
+
             Push-Location $tempDir
             git init
             git remote add origin $repoUrl
             git checkout -b gh-pages
             git add -A
-            git commit -m "Deploy static site" -q
+            git commit -m "Deploy static site with workflow" -q
             git push origin gh-pages --force
             Pop-Location
             Remove-Item $tempDir -Recurse -Force
